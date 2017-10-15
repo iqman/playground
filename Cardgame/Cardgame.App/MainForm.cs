@@ -11,20 +11,49 @@ using System.Windows.Forms;
 
 namespace Cardgame.App
 {
-    partial class MainForm : Form, IRenderTargetHolder
+    partial class MainForm : Form, IViewport
     {
         public IGameController GameController { get; set; }
-        Image IRenderTargetHolder.Target { get => pictureBoxMain.Image; set => pictureBoxMain.Image = value; }
+
+        int IViewport.Width => pictureBoxMain.Width;
+
+        int IViewport.Height => pictureBoxMain.Height;
 
         public MainForm()
         {
             InitializeComponent();
         }
 
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            GameController.MeasurementComplete += (s, args) => labelMeasurement.Text = args.Result.ToString();
+        }
+
+        public event EventHandler<ViewportUpdatedEventArgs> ViewportUpdated;
+        protected void OnViewportUpdated(ViewportUpdatedEventArgs args)
+        {
+            ViewportUpdated?.Invoke(this, args);
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             GameController.Start();
-            pictureBoxMain.Invalidate();
+        }
+
+        void IViewport.SetImage(Image image)
+        {
+            pictureBoxMain.Image = image;
+        }
+
+        void IViewport.Invalidate()
+        {
+           // pictureBoxMain.Invalidate();
+            pictureBoxMain.Refresh();
+        }
+
+        private void pictureBoxMain_SizeChanged(object sender, EventArgs e)
+        {
+            OnViewportUpdated(new ViewportUpdatedEventArgs(pictureBoxMain.Width, pictureBoxMain.Height));
         }
     }
 }

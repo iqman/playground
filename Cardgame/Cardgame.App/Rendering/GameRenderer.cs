@@ -5,36 +5,86 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cardgame.Common.Rendering;
+using System.Drawing.Imaging;
 
 namespace Cardgame.App.Rendering
 {
     class GameRenderer
     {
-        private readonly IRenderTargetHolder renderTargetHolder;
+        private readonly IViewport viewport;
         private readonly IGameState gameState;
         private readonly FaceCache faceCache;
-        private Image renderTarget;
+        private Image renderImage;
+        private Brush cardEdgeBrush;
+        private Brush cardBackgroundBrush;
+        const int CardCornerRadius = 10;
 
-        public GameRenderer(IRenderTargetHolder renderTargetHolder, IGameState gameState, FaceCache faceCache)
+        public GameRenderer(IViewport viewport, IGameState gameState, FaceCache faceCache)
         {
-            this.renderTargetHolder = renderTargetHolder;
+            this.viewport = viewport;
             this.gameState = gameState;
             this.faceCache = faceCache;
 
-            this.renderTarget = new Bitmap(200, 200);
+            viewport.ViewportUpdated += Viewport_OnViewportUpdated;
 
-            this.renderTargetHolder.Target = renderTarget;
+            InitalizeRendering();
+
+            RecreateRenderTarget(viewport.Width, viewport.Height);
+        }
+
+        private void InitalizeRendering()
+        {
+            cardEdgeBrush = Brushes.Black;
+            cardBackgroundBrush = Brushes.White;
+        }
+
+        private void Viewport_OnViewportUpdated(object sender, ViewportUpdatedEventArgs e)
+        {
+            RecreateRenderTarget(e.Width, e.Height);
+        }
+
+        private void RecreateRenderTarget(int width, int height)
+        {
+            var oldImage = renderImage;
+
+            using (Graphics g = Graphics.FromImage(faceCache.GetFace(Card.Clubs1)))
+            {
+                renderImage = new Bitmap(viewport.Width, viewport.Height, g);
+            }
+
+            this.viewport.SetImage(renderImage);
+
+            if (oldImage != null)
+            {
+                oldImage.Dispose();
+            }
+
+            Render();
         }
 
         public void Render()
         {
             var a = gameState.GetCardPositions();
 
-            using (var g = Graphics.FromImage(renderTargetHolder.Target))
+            using (var g = Graphics.FromImage(renderImage))
             {
-                g.DrawImage(faceCache.GetFace(a.card), a.point);
+
+                g.FillRoundedRectangle(cardBackgroundBrush, CreateCardRect(a.point), CardCornerRadius);
+
+                var i = faceCache.GetFace(a.card);
+
+                g.DrawImageUnscaled(i, Point.Round(a.point));
             }
-             
+
+            viewport.Invalidate();
         }
+
+        private RectangleF CreateCardRect(PointF p)
+        {
+            return new RectangleF(p.X, p.Y, FaceCache.CardWidth, FaceCache.CardHeight);
+        }
+
+
     }
 }

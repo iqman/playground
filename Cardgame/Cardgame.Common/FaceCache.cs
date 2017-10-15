@@ -10,7 +10,7 @@ namespace Cardgame.Common
 {
     public class FaceCache
     {
-        private IDictionary<Card, string> cardToFaceImageMap = new Dictionary<Card, string>() {
+        private IDictionary<Card, string> cardToFaceResourceStringMap = new Dictionary<Card, string>() {
 
             { Card.Diamonds1, "Cardgame.Common.faces.1_of_diamonds.png"},
             { Card.Diamonds2, "Cardgame.Common.faces.2_of_diamonds.png"},
@@ -67,10 +67,32 @@ namespace Cardgame.Common
             { Card.Joker, "Cardgame.Common.faces.1_of_joker.png" }
         };
 
+        public const int CardWidth = 222;
+        public const int CardHeight = 323;
+
+        private IDictionary<Card, Image> cardToFaceImageMap = new Dictionary<Card, Image>();
+
+        public FaceCache()
+        {
+            var cards = Enum.GetNames(typeof(Card));
+            foreach (var cardName in cards)
+            {
+                Card card = (Card)Enum.Parse(typeof(Card), cardName);
+                cardToFaceImageMap[card] = CacheFaceBitmap(card);
+            }
+            
+        }
+
+        public Image CacheFaceBitmap(Card card)
+        {
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(cardToFaceResourceStringMap[card]);
+            return new Bitmap(stream);
+        }
+
         public Image GetFace(Card card)
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(cardToFaceImageMap[card]);
-            return new Bitmap(stream);
+           // return CacheFaceBitmap(card);
+            return cardToFaceImageMap[card];
         }
     }
 }
