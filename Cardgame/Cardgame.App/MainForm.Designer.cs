@@ -44,6 +44,10 @@
             this.pictureBoxMain.Size = new System.Drawing.Size(564, 419);
             this.pictureBoxMain.TabIndex = 0;
             this.pictureBoxMain.TabStop = false;
+            this.pictureBoxMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxMain_MouseDown);
+            this.pictureBoxMain.MouseLeave += new System.EventHandler(this.pictureBoxMain_MouseLeave);
+            this.pictureBoxMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBoxMain_MouseMove);
+            this.pictureBoxMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBoxMain_MouseUp);
             // 
             // button1
             // 
@@ -72,6 +76,7 @@
             this.Controls.Add(this.labelMeasurement);
             this.Controls.Add(this.pictureBoxMain);
             this.Controls.Add(this.button1);
+            this.DoubleBuffered = true;
             this.Name = "MainForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.MainForm_Load);

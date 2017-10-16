@@ -37,13 +37,16 @@ namespace Cardgame.App
             kernel.Dispose();
         }
 
-        static void InitializeDependencies(IKernel kernel, IViewport form)
+        static void InitializeDependencies(IKernel kernel, MainForm form)
         {
             kernel.Bind<FaceCache>().ToSelf().InSingletonScope();
             kernel.Bind<IGameController>().To<SimpleGameController>().InSingletonScope();
             kernel.Bind<GameRenderer>().ToSelf().InSingletonScope();
-            kernel.Bind<IGameState>().To<SimpleGameState>().InSingletonScope(); 
+            kernel.Bind<IGameState>().To<SimpleGameState>().InSingletonScope();
+            kernel.Bind<IInteractor>().To<Interactor>().InSingletonScope();
+            
             kernel.Bind<IViewport>().ToMethod(context => form);
+            kernel.Bind<IMouseInputProxy>().ToMethod(context => form);
         }
     }
 }

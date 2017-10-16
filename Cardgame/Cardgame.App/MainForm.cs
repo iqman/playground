@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace Cardgame.App
 {
-    partial class MainForm : Form, IViewport
+    partial class MainForm : Form, IViewport, IMouseInputProxy
     {
         public IGameController GameController { get; set; }
 
@@ -23,7 +23,7 @@ namespace Cardgame.App
         {
             InitializeComponent();
         }
-
+        
         private void MainForm_Load(object sender, EventArgs e)
         {
             GameController.MeasurementComplete += (s, args) => labelMeasurement.Text = args.Result.ToString();
@@ -33,6 +33,30 @@ namespace Cardgame.App
         protected void OnViewportUpdated(ViewportUpdatedEventArgs args)
         {
             ViewportUpdated?.Invoke(this, args);
+        }
+
+        public event EventHandler<MouseEventArgs> ViewportMouseUp;
+        protected void OnViewportMouseUp(MouseEventArgs args)
+        {
+            ViewportMouseUp?.Invoke(this, args);
+        }
+
+        public event EventHandler<MouseEventArgs> ViewportMouseDown;
+        protected void OnViewportMouseDown(MouseEventArgs args)
+        {
+            ViewportMouseDown?.Invoke(this, args);
+        }
+
+        public event EventHandler<MouseEventArgs> ViewportMouseMove;
+        protected void OnViewportMouseMove(MouseEventArgs args)
+        {
+            ViewportMouseMove?.Invoke(this, args);
+        }
+
+        public event EventHandler ViewportMouseLeave;
+        protected void OnViewportMouseLeave()
+        {
+            ViewportMouseLeave?.Invoke(this, EventArgs.Empty);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -54,6 +78,26 @@ namespace Cardgame.App
         private void pictureBoxMain_SizeChanged(object sender, EventArgs e)
         {
             OnViewportUpdated(new ViewportUpdatedEventArgs(pictureBoxMain.Width, pictureBoxMain.Height));
+        }
+
+        private void pictureBoxMain_MouseDown(object sender, MouseEventArgs e)
+        {
+            OnViewportMouseDown(e);
+        }
+
+        private void pictureBoxMain_MouseMove(object sender, MouseEventArgs e)
+        {
+            OnViewportMouseMove(e);
+        }
+
+        private void pictureBoxMain_MouseUp(object sender, MouseEventArgs e)
+        {
+            OnViewportMouseUp(e);
+        }
+
+        private void pictureBoxMain_MouseLeave(object sender, EventArgs e)
+        {
+            OnViewportMouseLeave();
         }
     }
 }

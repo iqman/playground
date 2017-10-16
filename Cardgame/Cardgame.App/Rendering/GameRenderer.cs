@@ -50,6 +50,7 @@ namespace Cardgame.App.Rendering
 
             using (Graphics g = Graphics.FromImage(faceCache.GetFace(Card.Clubs1)))
             {
+                // create the new bitmap using the resolution of one of the cards
                 renderImage = new Bitmap(viewport.Width, viewport.Height, g);
             }
 
