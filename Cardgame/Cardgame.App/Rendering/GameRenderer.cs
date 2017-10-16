@@ -18,6 +18,7 @@ namespace Cardgame.App.Rendering
         private Image renderImage;
         private Brush cardEdgeBrush;
         private Brush cardBackgroundBrush;
+        private Pen cardEdgePen;
         const int CardCornerRadius = 10;
 
         public GameRenderer(IViewport viewport, IGameState gameState, FaceCache faceCache)
@@ -27,16 +28,23 @@ namespace Cardgame.App.Rendering
             this.faceCache = faceCache;
 
             viewport.ViewportUpdated += Viewport_OnViewportUpdated;
+            gameState.StateUpdated += GameState_StateUpdated;
 
             InitalizeRendering();
 
             RecreateRenderTarget(viewport.Width, viewport.Height);
         }
 
+        private void GameState_StateUpdated(object sender, EventArgs e)
+        {
+            Render();
+        }
+
         private void InitalizeRendering()
         {
             cardEdgeBrush = Brushes.Black;
             cardBackgroundBrush = Brushes.White;
+            cardEdgePen = Pens.Black;
         }
 
         private void Viewport_OnViewportUpdated(object sender, ViewportUpdatedEventArgs e)
@@ -66,16 +74,21 @@ namespace Cardgame.App.Rendering
 
         public void Render()
         {
-            var a = gameState.GetCardPositions();
+            var placedCards = gameState.GetCards();
 
             using (var g = Graphics.FromImage(renderImage))
             {
+                foreach (var placedCard in placedCards)
+                {
+                    var card = placedCard.Key;
+                    var position = Point.Round(placedCard.Value);
 
-                g.FillRoundedRectangle(cardBackgroundBrush, CreateCardRect(a.point), CardCornerRadius);
+                    var cardRect = CreateCardRect(position);
 
-                var i = faceCache.GetFace(a.card);
-
-                g.DrawImageUnscaled(i, Point.Round(a.point));
+                    g.FillRoundedRectangle(cardBackgroundBrush, cardRect, CardCornerRadius);
+                    g.DrawImageUnscaled(faceCache.GetFace(card), position);
+                    g.DrawRoundedRectangle(cardEdgePen, cardRect, CardCornerRadius);
+                }
             }
 
             viewport.Invalidate();
@@ -85,7 +98,5 @@ namespace Cardgame.App.Rendering
         {
             return new RectangleF(p.X, p.Y, FaceCache.CardWidth, FaceCache.CardHeight);
         }
-
-
     }
 }

@@ -10,26 +10,29 @@ namespace Cardgame.App.GameLogic
 {
     class SimpleGameState : IGameState
     {
-        public (Card card, PointF point) GetCardPositions()
+        private IDictionary<Card, PointF> cards = new Dictionary<Card, PointF>();
+
+        public event EventHandler StateUpdated;
+        protected void OnStateUpdated()
         {
-            return (RandomCard(), RandomPosition());
-            //return (Card.Clubs11, new PointF(100, 100));
+            StateUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private PointF RandomPosition()
+        public void PlaceCard(Card card, PointF position)
         {
-            var r = new Random();
-
-            return new PointF(r.Next(200), r.Next(200));
+            cards[card] = position;
+            OnStateUpdated();
         }
 
-        private Card RandomCard()
+        public void RemoveCard(Card card)
         {
-            var possibleCardNames = Enum.GetNames(typeof(Card));
-            var r = new Random();
-            var next = r.Next(possibleCardNames.Length);
+            cards.Remove(card);
+            OnStateUpdated();
+        }
 
-            return (Card)Enum.Parse(typeof(Card), possibleCardNames[next]);
+        public IDictionary<Card, PointF> GetCards()
+        {
+            return cards;
         }
     }
 }

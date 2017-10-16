@@ -1,7 +1,9 @@
 ﻿using Cardgame.App.Rendering;
+using Cardgame.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +12,7 @@ namespace Cardgame.App.GameLogic
 {
     class SimpleGameController : IGameController
     {
-        private readonly GameRenderer renderer;
+        private readonly IGameState gameState;
 
         public event EventHandler<MeasurementCompleteEventArgs> MeasurementComplete;
         protected void OnMeasurementComplete(MeasurementCompleteEventArgs args)
@@ -18,9 +20,9 @@ namespace Cardgame.App.GameLogic
             MeasurementComplete?.Invoke(this, args);
         }
 
-        public SimpleGameController(GameRenderer renderer)
+        public SimpleGameController(IGameState gameState)
         {
-            this.renderer = renderer;
+            this.gameState = gameState;
         }
 
         public void Start()
@@ -29,14 +31,27 @@ namespace Cardgame.App.GameLogic
 
             sw.Start();
 
-            for (int i = 0; i < 100; i++)
-            {
-                renderer.Render();
-            }
+            gameState.PlaceCard(Card.Diamonds11, new PointF(200, 200));
 
             sw.Stop();
 
             OnMeasurementComplete(new MeasurementCompleteEventArgs(sw.ElapsedMilliseconds));
+        }
+
+        private PointF RandomPosition()
+        {
+            var r = new Random();
+
+            return new PointF(r.Next(300), r.Next(300));
+        }
+
+        private Card RandomCard()
+        {
+            var possibleCardNames = Enum.GetNames(typeof(Card));
+            var r = new Random();
+            var next = r.Next(possibleCardNames.Length);
+
+            return (Card)Enum.Parse(typeof(Card), possibleCardNames[next]);
         }
     }
 }

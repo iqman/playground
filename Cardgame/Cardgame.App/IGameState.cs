@@ -10,6 +10,9 @@ namespace Cardgame.App
 {
     interface IGameState
     {
-        (Card card, PointF point) GetCardPositions();
+        IDictionary<Card, PointF> GetCards();
+        void PlaceCard(Card card, PointF position);
+        void RemoveCard(Card card);
+        event EventHandler StateUpdated;
     }
 }

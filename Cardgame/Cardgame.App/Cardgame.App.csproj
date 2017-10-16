@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CardInfo.cs" />
     <Compile Include="GameLogic\Interactor.cs" />
     <Compile Include="GameLogic\SimpleGameState.cs" />
     <Compile Include="IGameController.cs" />

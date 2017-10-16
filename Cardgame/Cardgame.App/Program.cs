@@ -28,6 +28,7 @@ namespace Cardgame.App
             InitializeDependencies(kernel, form);
 
             var simpleGame = kernel.Get<IGameController>();
+            var renderer = kernel.Get<GameRenderer>();
 
             form.GameController = simpleGame;
 
