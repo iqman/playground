@@ -71,6 +71,8 @@ namespace Cardgame.Common
         public const int CardHeight = 323;
 
         private IDictionary<Card, Image> cardToFaceImageMap = new Dictionary<Card, Image>();
+        private Image slotImage;
+        private Image backImage;
 
         public FaceCache()
         {
@@ -80,12 +82,18 @@ namespace Cardgame.Common
                 Card card = (Card)Enum.Parse(typeof(Card), cardName);
                 cardToFaceImageMap[card] = CacheFaceBitmap(card);
             }
-            
+            slotImage = CacheBitmap("Cardgame.Common.faces.slot.png");
+            backImage = CacheBitmap("Cardgame.Common.faces.back.png");
         }
 
         public Image CacheFaceBitmap(Card card)
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(cardToFaceResourceStringMap[card]);
+            return CacheBitmap(cardToFaceResourceStringMap[card]);
+        }
+
+        public Image CacheBitmap(string path)
+        {
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
             return new Bitmap(stream);
         }
 
@@ -93,6 +101,16 @@ namespace Cardgame.Common
         {
            // return CacheFaceBitmap(card);
             return cardToFaceImageMap[card];
+        }
+
+        public Image GetSlot()
+        {
+            return slotImage;
+        }
+
+        public Image GetBack()
+        {
+            return backImage;
         }
     }
 }

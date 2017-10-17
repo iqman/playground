@@ -19,7 +19,10 @@ namespace Cardgame.App.Rendering
         private Brush cardEdgeBrush;
         private Brush cardBackgroundBrush;
         private Pen cardEdgePen;
+        private Pen slotPen;
         const int CardCornerRadius = 10;
+
+        private (Card card, PointF p)? cardDragPositionOverride;
 
         public GameRenderer(IViewport viewport, IGameState gameState, FaceCache faceCache)
         {
@@ -45,6 +48,7 @@ namespace Cardgame.App.Rendering
             cardEdgeBrush = Brushes.Black;
             cardBackgroundBrush = Brushes.White;
             cardEdgePen = Pens.Black;
+            slotPen = new Pen(Color.Black, 3);
         }
 
         private void Viewport_OnViewportUpdated(object sender, ViewportUpdatedEventArgs e)
@@ -56,7 +60,7 @@ namespace Cardgame.App.Rendering
         {
             var oldImage = renderImage;
 
-            using (Graphics g = Graphics.FromImage(faceCache.GetFace(Card.Clubs1)))
+            using (Graphics g = Graphics.FromImage(faceCache.GetSlot()))
             {
                 // create the new bitmap using the resolution of one of the cards
                 renderImage = new Bitmap(viewport.Width, viewport.Height, g);
@@ -74,29 +78,81 @@ namespace Cardgame.App.Rendering
 
         public void Render()
         {
-            var placedCards = gameState.GetCards();
-
             using (var g = Graphics.FromImage(renderImage))
             {
-                foreach (var placedCard in placedCards)
-                {
-                    var card = placedCard.Key;
-                    var position = Point.Round(placedCard.Value);
-
-                    var cardRect = CreateCardRect(position);
-
-                    g.FillRoundedRectangle(cardBackgroundBrush, cardRect, CardCornerRadius);
-                    g.DrawImageUnscaled(faceCache.GetFace(card), position);
-                    g.DrawRoundedRectangle(cardEdgePen, cardRect, CardCornerRadius);
-                }
+                g.Clear(Color.Transparent);
+                RenderSlots(g);
+                RenderCards(g);
             }
 
             viewport.Invalidate();
         }
 
+        private void RenderSlots(Graphics g)
+        {
+            var slots = gameState.GetSlots();
+            foreach (var slot in slots)
+            {
+                var position = Point.Round(slot);
+                var cardRect = CreateCardRect(position);
+                g.DrawRoundedRectangle(slotPen, cardRect, CardCornerRadius);
+              //  g.DrawImage(faceCache.GetSlot(), Point.Round(slot));
+            }
+        }
+
+        private void RenderCards(Graphics g)
+        {
+            var placedCards = gameState.GetCards();
+
+            foreach (var placedCard in placedCards)
+            {
+                var card = placedCard.Key;
+                var position = Point.Round(placedCard.Value);
+
+                if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.card == card)
+                {
+                    position = Point.Round(cardDragPositionOverride.Value.p);
+                }
+
+                var cardRect = CreateCardRect(position);
+
+                g.FillRoundedRectangle(cardBackgroundBrush, cardRect, CardCornerRadius);
+                g.DrawImage(faceCache.GetFace(card), position);
+                g.DrawRoundedRectangle(cardEdgePen, cardRect, CardCornerRadius);
+            }
+        }
+
         private RectangleF CreateCardRect(PointF p)
         {
             return new RectangleF(p.X, p.Y, FaceCache.CardWidth, FaceCache.CardHeight);
+        }
+
+        public RectangleF GetCardBounds(Card card)
+        {
+            var p = gameState.GetCardPosition(card);
+            if (p == PointF.Empty)
+            {
+                return RectangleF.Empty;
+            }
+
+            if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.card == card)
+            {
+                p = cardDragPositionOverride.Value.p;
+            }
+
+            return CreateCardRect(p);
+        }
+
+        public void RenderCardDrag(Card card, PointF p)
+        {
+            cardDragPositionOverride = (card, p);
+            Render();
+        }
+
+        public void ClearCardDrag()
+        {
+            cardDragPositionOverride = null;
+            Render();
         }
     }
 }

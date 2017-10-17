@@ -36,12 +36,10 @@
             // 
             // pictureBoxMain
             // 
-            this.pictureBoxMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxMain.Location = new System.Drawing.Point(12, 12);
+            this.pictureBoxMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBoxMain.Location = new System.Drawing.Point(0, 0);
             this.pictureBoxMain.Name = "pictureBoxMain";
-            this.pictureBoxMain.Size = new System.Drawing.Size(943, 625);
+            this.pictureBoxMain.Size = new System.Drawing.Size(967, 649);
             this.pictureBoxMain.TabIndex = 0;
             this.pictureBoxMain.TabStop = false;
             this.pictureBoxMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxMain_MouseDown);
@@ -74,13 +72,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(967, 649);
             this.Controls.Add(this.labelMeasurement);
-            this.Controls.Add(this.pictureBoxMain);
             this.Controls.Add(this.button1);
+            this.Controls.Add(this.pictureBoxMain);
             this.DoubleBuffered = true;
             this.Name = "MainForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.ResizeEnd += new System.EventHandler(this.pictureBoxMain_SizeChanged);
+            this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMain)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

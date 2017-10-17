@@ -75,11 +75,6 @@ namespace Cardgame.App
             pictureBoxMain.Refresh();
         }
 
-        private void pictureBoxMain_SizeChanged(object sender, EventArgs e)
-        {
-            OnViewportUpdated(new ViewportUpdatedEventArgs(pictureBoxMain.Width, pictureBoxMain.Height));
-        }
-
         private void pictureBoxMain_MouseDown(object sender, MouseEventArgs e)
         {
             OnViewportMouseDown(e);
@@ -87,7 +82,10 @@ namespace Cardgame.App
 
         private void pictureBoxMain_MouseMove(object sender, MouseEventArgs e)
         {
-            OnViewportMouseMove(e);
+            if (pictureBoxMain.Bounds.Contains(e.Location))
+            {
+                OnViewportMouseMove(e);
+            }
         }
 
         private void pictureBoxMain_MouseUp(object sender, MouseEventArgs e)
@@ -98,6 +96,11 @@ namespace Cardgame.App
         private void pictureBoxMain_MouseLeave(object sender, EventArgs e)
         {
             OnViewportMouseLeave();
+        }
+
+        private void MainForm_ResizeEnd(object sender, EventArgs e)
+        {
+            OnViewportUpdated(new ViewportUpdatedEventArgs(pictureBoxMain.Width, pictureBoxMain.Height));
         }
     }
 }

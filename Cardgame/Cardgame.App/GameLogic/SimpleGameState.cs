@@ -10,12 +10,17 @@ namespace Cardgame.App.GameLogic
 {
     class SimpleGameState : IGameState
     {
-        private IDictionary<Card, PointF> cards = new Dictionary<Card, PointF>();
-
+        private readonly IDictionary<Card, PointF> cards = new Dictionary<Card, PointF>();
+        private bool suspended = false;
+        private readonly IList<PointF> slots = new List<PointF>();
+        
         public event EventHandler StateUpdated;
         protected void OnStateUpdated()
         {
-            StateUpdated?.Invoke(this, EventArgs.Empty);
+            if (!suspended)
+            {
+                StateUpdated?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void PlaceCard(Card card, PointF position)
@@ -33,6 +38,33 @@ namespace Cardgame.App.GameLogic
         public IDictionary<Card, PointF> GetCards()
         {
             return cards;
+        }
+
+        public IList<PointF> GetSlots()
+        {
+            return slots;
+        }
+
+        public PointF GetCardPosition(Card card)
+        {
+            return cards.ContainsKey(card) ? cards[card] : PointF.Empty;
+        }
+
+        public void PlaceSlot(PointF position)
+        {
+            slots.Add(position);
+            OnStateUpdated();
+        }
+
+        public void Suspend()
+        {
+            suspended = true;
+        }
+
+        public void Resume()
+        {
+            suspended = false;
+            OnStateUpdated();
         }
     }
 }

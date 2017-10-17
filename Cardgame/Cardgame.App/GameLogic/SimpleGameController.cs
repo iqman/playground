@@ -13,6 +13,7 @@ namespace Cardgame.App.GameLogic
     class SimpleGameController : IGameController
     {
         private readonly IGameState gameState;
+        private readonly IInteractor interactor;
 
         public event EventHandler<MeasurementCompleteEventArgs> MeasurementComplete;
         protected void OnMeasurementComplete(MeasurementCompleteEventArgs args)
@@ -20,9 +21,10 @@ namespace Cardgame.App.GameLogic
             MeasurementComplete?.Invoke(this, args);
         }
 
-        public SimpleGameController(IGameState gameState)
+        public SimpleGameController(IGameState gameState, IInteractor interactor)
         {
             this.gameState = gameState;
+            this.interactor = interactor;
         }
 
         public void Start()
@@ -31,7 +33,13 @@ namespace Cardgame.App.GameLogic
 
             sw.Start();
 
+            gameState.Suspend();
             gameState.PlaceCard(Card.Diamonds11, new PointF(200, 200));
+            gameState.PlaceSlot(new PointF(30, 30));
+            gameState.PlaceSlot(new PointF(260, 30));
+            gameState.PlaceSlot(new PointF(490, 30));
+            gameState.PlaceSlot(new PointF(720, 30));
+            gameState.Resume();
 
             sw.Stop();
 
