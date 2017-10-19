@@ -14,6 +14,7 @@ namespace Cardgame.App.GameLogic
     {
         private readonly IGameState gameState;
         private readonly IInteractor interactor;
+        private readonly GameRenderer renderer;
 
         public event EventHandler<MeasurementCompleteEventArgs> MeasurementComplete;
         protected void OnMeasurementComplete(MeasurementCompleteEventArgs args)
@@ -21,10 +22,11 @@ namespace Cardgame.App.GameLogic
             MeasurementComplete?.Invoke(this, args);
         }
 
-        public SimpleGameController(IGameState gameState, IInteractor interactor)
+        public SimpleGameController(IGameState gameState, IInteractor interactor, GameRenderer renderer)
         {
             this.gameState = gameState;
             this.interactor = interactor;
+            this.renderer = renderer;
         }
 
         public void Start()
@@ -33,13 +35,13 @@ namespace Cardgame.App.GameLogic
 
             sw.Start();
 
-            gameState.Suspend();
+            renderer.Suspend();
             gameState.PlaceCard(Card.Diamonds11, new PointF(200, 200));
-            gameState.PlaceSlot(new PointF(30, 30));
-            gameState.PlaceSlot(new PointF(260, 30));
-            gameState.PlaceSlot(new PointF(490, 30));
-            gameState.PlaceSlot(new PointF(720, 30));
-            gameState.Resume();
+            gameState.PlaceSlot(GetSlotKey(Slot.Swap1), new PointF(30, 30));
+            gameState.PlaceSlot(GetSlotKey(Slot.Swap2), new PointF(260, 30));
+            gameState.PlaceSlot(GetSlotKey(Slot.Swap3), new PointF(490, 30));
+            gameState.PlaceSlot(GetSlotKey(Slot.Swap4), new PointF(720, 30));
+            renderer.Resume();
 
             sw.Stop();
 
@@ -61,5 +63,16 @@ namespace Cardgame.App.GameLogic
 
             return (Card)Enum.Parse(typeof(Card), possibleCardNames[next]);
         }
+
+        private string GetSlotKey(Slot slot)
+        {
+            return Enum.GetName(typeof(Slot), slot);
+        }
+
+        private Slot GetSlot(string key)
+        {
+            return (Slot)Enum.Parse(typeof(Slot), key);
+        }
+
     }
 }

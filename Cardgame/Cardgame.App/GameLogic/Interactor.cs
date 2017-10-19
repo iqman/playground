@@ -17,6 +17,18 @@ namespace Cardgame.App.GameLogic
 
         public (Card card, PointF offset)? CardBeingDragged { get; set; }
 
+        public event EventHandler<CardDragStartedEventArgs> CardDragStarted;
+        protected void OnCardDragStarted(CardDragStartedEventArgs args)
+        {
+            CardDragStarted?.Invoke(this, args);
+        }
+
+        public event EventHandler<CardDragStoppedEventArgs> CardDragStopped;
+        protected void OnCardDragStopped(CardDragStoppedEventArgs args)
+        {
+            CardDragStopped?.Invoke(this, args);
+        }
+
         public Interactor(IMouseInputProxy mouseInputProxy, IGameState gameState, GameRenderer renderer)
         {
             this.mouseInputProxy = mouseInputProxy;
@@ -44,12 +56,16 @@ namespace Cardgame.App.GameLogic
 
         private void MouseInputProxy_ViewportMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            var correctedPosition = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
+            var targetSlotKey = GetTargetSlotKey(correctedPosition);
+            OnCardDragStopped(new CardDragStoppedEventArgs(CardBeingDragged.Value.card, targetSlotKey));
             CardBeingDragged = null;
         }
 
         private void MouseInputProxy_ViewportMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             CardBeingDragged = GetClickedCard(e.Location);
+            OnCardDragStarted(new CardDragStartedEventArgs(CardBeingDragged.Value.card));
         }
 
         private (Card card, PointF offset)? GetClickedCard(PointF position)
@@ -63,6 +79,22 @@ namespace Cardgame.App.GameLogic
                 {
                     var offset = new PointF(position.X-bounds.Location.X, position.Y -bounds.Location.Y);
                     return (card.Key, offset);
+                }
+            }
+
+            return null;
+        }
+
+        private string GetTargetSlotKey(PointF position)
+        {
+            var slots = gameState.GetSlots();
+
+            foreach (var slot in slots)
+            {
+                var bounds = renderer.GetSlotBounds(slot.Key);
+                if (bounds.Contains(position))
+                {
+                    return slot.Key;
                 }
             }
 

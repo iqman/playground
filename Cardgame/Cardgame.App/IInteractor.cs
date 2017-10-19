@@ -9,6 +9,7 @@ namespace Cardgame.App
 {
     interface IInteractor
     {
-        
+        event EventHandler<CardDragStartedEventArgs> CardDragStarted;
+        event EventHandler<CardDragStoppedEventArgs> CardDragStopped;
     }
 }

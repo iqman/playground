@@ -15,6 +15,7 @@ namespace Cardgame.App.Rendering
         private readonly IViewport viewport;
         private readonly IGameState gameState;
         private readonly FaceCache faceCache;
+        private bool suspended = false;
         private Image renderImage;
         private Brush cardEdgeBrush;
         private Brush cardBackgroundBrush;
@@ -78,6 +79,11 @@ namespace Cardgame.App.Rendering
 
         public void Render()
         {
+            if(suspended)
+            {
+                return;
+            }
+
             using (var g = Graphics.FromImage(renderImage))
             {
                 g.Clear(Color.Transparent);
@@ -90,7 +96,7 @@ namespace Cardgame.App.Rendering
 
         private void RenderSlots(Graphics g)
         {
-            var slots = gameState.GetSlots();
+            var slots = gameState.GetSlots().Values;
             foreach (var slot in slots)
             {
                 var position = Point.Round(slot);
@@ -143,6 +149,17 @@ namespace Cardgame.App.Rendering
             return CreateCardRect(p);
         }
 
+        public RectangleF GetSlotBounds(string slotKey)
+        {
+            var p = gameState.GetSlotPosition(slotKey);
+            if (p == PointF.Empty)
+            {
+                return RectangleF.Empty;
+            }
+
+            return CreateCardRect(p);
+        }
+
         public void RenderCardDrag(Card card, PointF p)
         {
             cardDragPositionOverride = (card, p);
@@ -152,6 +169,17 @@ namespace Cardgame.App.Rendering
         public void ClearCardDrag()
         {
             cardDragPositionOverride = null;
+            Render();
+        }
+
+        public void Suspend()
+        {
+            suspended = true;
+        }
+
+        public void Resume()
+        {
+            suspended = false;
             Render();
         }
     }

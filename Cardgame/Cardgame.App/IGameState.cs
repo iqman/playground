@@ -11,13 +11,12 @@ namespace Cardgame.App
     interface IGameState
     {
         PointF GetCardPosition(Card card);
+        PointF GetSlotPosition(string slotKey);
         IDictionary<Card, PointF> GetCards();
-        IList<PointF> GetSlots();
-        void PlaceSlot(PointF position);
+        IDictionary<string, PointF> GetSlots();
+        void PlaceSlot(string key, PointF position);
         void PlaceCard(Card card, PointF position);
         void RemoveCard(Card card);
         event EventHandler StateUpdated;
-        void Suspend();
-        void Resume();
     }
 }
