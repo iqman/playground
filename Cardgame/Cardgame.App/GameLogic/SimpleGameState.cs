@@ -10,8 +10,7 @@ namespace Cardgame.App.GameLogic
 {
     class SimpleGameState : IGameState
     {
-        private readonly IDictionary<Card, PointF> cards = new Dictionary<Card, PointF>();
-        private readonly IDictionary<string, PointF> slots = new Dictionary<string, PointF>();
+        private readonly IDictionary<string, SlotInfo> slots = new Dictionary<string, SlotInfo>();
         
         public event EventHandler StateUpdated;
         protected void OnStateUpdated()
@@ -19,41 +18,45 @@ namespace Cardgame.App.GameLogic
             StateUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        public void PlaceCard(Card card, PointF position)
+        public void PlaceCard(Card card, string slotKey)
         {
-            cards[card] = position;
+            if (!slots.ContainsKey(slotKey))
+            {
+                throw new InvalidOperationException();
+            }
+
+            slots[slotKey].Cards.Add(card);
             OnStateUpdated();
         }
 
         public void RemoveCard(Card card)
         {
-            cards.Remove(card);
-            OnStateUpdated();
+            var slotsContaining = slots.Where(slot => slot.Value.Cards.Contains(card));
+
+            foreach (var slot in slotsContaining)
+            {
+                slot.Value.Cards.Remove(card);
+            }
         }
 
-        public IDictionary<Card, PointF> GetCards()
-        {
-            return cards;
-        }
-
-        public IDictionary<string, PointF> GetSlots()
+        public IDictionary<string, SlotInfo> GetAllSlots()
         {
             return slots;
         }
 
-        public PointF GetCardPosition(Card card)
+        public SlotInfo GetSlot(string slotKey)
         {
-            return cards.ContainsKey(card) ? cards[card] : PointF.Empty;
+            if (!slots.ContainsKey(slotKey))
+            {
+                throw new InvalidOperationException();
+            }
+
+            return slots[slotKey];
         }
 
-        public PointF GetSlotPosition(string slotKey)
+        public void CreateSlot(string key, PointF position)
         {
-            return slots.ContainsKey(slotKey) ? slots[slotKey] : PointF.Empty;
-        }
-
-        public void PlaceSlot(string key, PointF position)
-        {
-            slots.Add(key, position);
+            slots.Add(key, new SlotInfo(position));
             OnStateUpdated();
         }
     }

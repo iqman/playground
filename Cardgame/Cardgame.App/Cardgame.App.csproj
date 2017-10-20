@@ -67,9 +67,10 @@
     <Compile Include="CardInfo.cs" />
     <Compile Include="CardDragStoppedEventArgs.cs" />
     <Compile Include="CardDragStartedEventArgs.cs" />
-    <Compile Include="GameLogic\Slot.cs" />
+    <Compile Include="GameLogic\SimpleSlot.cs" />
     <Compile Include="GameLogic\Interactor.cs" />
     <Compile Include="GameLogic\SimpleGameState.cs" />
+    <Compile Include="GameLogic\SlotInfo.cs" />
     <Compile Include="IGameController.cs" />
     <Compile Include="IGameState.cs" />
     <Compile Include="IMouseInputProxy.cs" />

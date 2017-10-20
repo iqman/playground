@@ -56,29 +56,43 @@ namespace Cardgame.App.GameLogic
 
         private void MouseInputProxy_ViewportMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            var correctedPosition = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
-            var targetSlotKey = GetTargetSlotKey(correctedPosition);
-            OnCardDragStopped(new CardDragStoppedEventArgs(CardBeingDragged.Value.card, targetSlotKey));
+            if (CardBeingDragged != null)
+            {
+                var correctedPosition = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
+                var targetSlotKey = GetTargetSlotKey(correctedPosition);
+                OnCardDragStopped(new CardDragStoppedEventArgs(CardBeingDragged.Value.card, targetSlotKey));
+            }
             CardBeingDragged = null;
+            renderer.ClearCardDrag();
         }
 
         private void MouseInputProxy_ViewportMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             CardBeingDragged = GetClickedCard(e.Location);
-            OnCardDragStarted(new CardDragStartedEventArgs(CardBeingDragged.Value.card));
+            if (CardBeingDragged != null)
+            {
+                OnCardDragStarted(new CardDragStartedEventArgs(CardBeingDragged.Value.card));
+            }
         }
 
         private (Card card, PointF offset)? GetClickedCard(PointF position)
         {
-            var cards = gameState.GetCards();
+            var slots = gameState.GetAllSlots();
 
-            foreach (var card in cards)
+            foreach (var slot in slots)
             {
-                var bounds = renderer.GetCardBounds(card.Key);
-                if (bounds.Contains(position))
+                // reverse to check last cards the ones on the top) before the ones below
+                // as the rendering may draw them partially on top of each other
+                var cards = slot.Value.Cards.Reverse();
+
+                foreach (var card in cards)
                 {
-                    var offset = new PointF(position.X-bounds.Location.X, position.Y -bounds.Location.Y);
-                    return (card.Key, offset);
+                    var bounds = renderer.GetCardBounds(card);
+                    if (bounds.Contains(position))
+                    {
+                        var offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y);
+                        return (card, offset);
+                    }
                 }
             }
 
@@ -87,7 +101,7 @@ namespace Cardgame.App.GameLogic
 
         private string GetTargetSlotKey(PointF position)
         {
-            var slots = gameState.GetSlots();
+            var slots = gameState.GetAllSlots();
 
             foreach (var slot in slots)
             {

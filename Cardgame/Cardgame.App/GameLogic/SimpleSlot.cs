@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cardgame.App.GameLogic
 {
-    enum Slot
+    enum SimpleSlot
     {
         Swap1,
         Swap2,

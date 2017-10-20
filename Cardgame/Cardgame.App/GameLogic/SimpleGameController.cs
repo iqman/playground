@@ -27,6 +27,17 @@ namespace Cardgame.App.GameLogic
             this.gameState = gameState;
             this.interactor = interactor;
             this.renderer = renderer;
+
+            interactor.CardDragStopped += Interactor_CardDragStopped;
+        }
+
+        private void Interactor_CardDragStopped(object sender, CardDragStoppedEventArgs e)
+        {
+            if (e.TargetSlotKey != null)
+            {
+                gameState.RemoveCard(e.Card);
+                gameState.PlaceCard(e.Card, e.TargetSlotKey);
+            }
         }
 
         public void Start()
@@ -36,11 +47,15 @@ namespace Cardgame.App.GameLogic
             sw.Start();
 
             renderer.Suspend();
-            gameState.PlaceCard(Card.Diamonds11, new PointF(200, 200));
-            gameState.PlaceSlot(GetSlotKey(Slot.Swap1), new PointF(30, 30));
-            gameState.PlaceSlot(GetSlotKey(Slot.Swap2), new PointF(260, 30));
-            gameState.PlaceSlot(GetSlotKey(Slot.Swap3), new PointF(490, 30));
-            gameState.PlaceSlot(GetSlotKey(Slot.Swap4), new PointF(720, 30));
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap1), new PointF(30, 30));
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap2), new PointF(260, 30));
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap3), new PointF(490, 30));
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap4), new PointF(720, 30));
+
+            gameState.PlaceCard(Card.Diamonds11, GetSlotKey(SimpleSlot.Swap1));
+            gameState.PlaceCard(Card.Diamonds7, GetSlotKey(SimpleSlot.Swap1));
+            gameState.PlaceCard(Card.Diamonds12, GetSlotKey(SimpleSlot.Swap2));
+
             renderer.Resume();
 
             sw.Stop();
@@ -64,14 +79,14 @@ namespace Cardgame.App.GameLogic
             return (Card)Enum.Parse(typeof(Card), possibleCardNames[next]);
         }
 
-        private string GetSlotKey(Slot slot)
+        private string GetSlotKey(SimpleSlot slot)
         {
-            return Enum.GetName(typeof(Slot), slot);
+            return Enum.GetName(typeof(SimpleSlot), slot);
         }
 
-        private Slot GetSlot(string key)
+        private SimpleSlot GetSlot(string key)
         {
-            return (Slot)Enum.Parse(typeof(Slot), key);
+            return (SimpleSlot)Enum.Parse(typeof(SimpleSlot), key);
         }
 
     }
