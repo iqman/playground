@@ -16,6 +16,7 @@ namespace Cardgame.App.GameLogic
         private readonly GameRenderer renderer;
 
         public (Card card, PointF offset)? CardBeingDragged { get; set; }
+        private Point mouseDownPosition;
 
         public event EventHandler<CardDragStartedEventArgs> CardDragStarted;
         protected void OnCardDragStarted(CardDragStartedEventArgs args)
@@ -49,8 +50,8 @@ namespace Cardgame.App.GameLogic
         {
             if(CardBeingDragged != null)
             {
-                var correctedPosition = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
-                renderer.RenderCardDrag(CardBeingDragged.Value.card, correctedPosition);
+                var cardTopLeft = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
+                renderer.RenderCardDrag(CardBeingDragged.Value.card, cardTopLeft);
             }
         }
 
@@ -58,8 +59,9 @@ namespace Cardgame.App.GameLogic
         {
             if (CardBeingDragged != null)
             {
-                var correctedPosition = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
-                var targetSlotKey = GetTargetSlotKey(correctedPosition);
+                var cardTopLeft = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
+                var draggedCardCenter = renderer.OffsetToCardCenter(cardTopLeft);
+                var targetSlotKey = GetTargetSlotKey(draggedCardCenter);
                 OnCardDragStopped(new CardDragStoppedEventArgs(CardBeingDragged.Value.card, targetSlotKey));
             }
             CardBeingDragged = null;
@@ -68,6 +70,7 @@ namespace Cardgame.App.GameLogic
 
         private void MouseInputProxy_ViewportMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            mouseDownPosition = e.Location;
             CardBeingDragged = GetClickedCard(e.Location);
             if (CardBeingDragged != null)
             {

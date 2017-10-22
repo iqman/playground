@@ -151,6 +151,11 @@ namespace Cardgame.App.Rendering
             return new RectangleF(p.X, p.Y, FaceCache.CardWidth, FaceCache.CardHeight);
         }
 
+        public PointF OffsetToCardCenter(PointF cardTopLeft)
+        {
+            return new PointF(cardTopLeft.X + FaceCache.CardWidth / 2, cardTopLeft.Y + FaceCache.CardHeight / 2);
+        }
+
         public RectangleF GetCardBounds(Card card)
         {
             var slots = gameState.GetAllSlots();
