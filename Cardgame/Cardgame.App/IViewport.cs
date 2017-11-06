@@ -13,6 +13,6 @@ namespace Cardgame.App
         int Height { get; }
         void SetImage(Image image);
         void Invalidate();
-        event EventHandler<ViewportUpdatedEventArgs> ViewportUpdated;
+        event EventHandler ViewportUpdated;
     }
 }

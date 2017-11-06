@@ -16,7 +16,6 @@ namespace Cardgame.App.GameLogic
         private readonly GameRenderer renderer;
 
         public (Card card, PointF offset)? CardBeingDragged { get; set; }
-        private Point mouseDownPosition;
 
         public event EventHandler<CardDragStartedEventArgs> CardDragStarted;
         protected void OnCardDragStarted(CardDragStartedEventArgs args)
@@ -70,7 +69,6 @@ namespace Cardgame.App.GameLogic
 
         private void MouseInputProxy_ViewportMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            mouseDownPosition = e.Location;
             CardBeingDragged = GetClickedCard(e.Location);
             if (CardBeingDragged != null)
             {

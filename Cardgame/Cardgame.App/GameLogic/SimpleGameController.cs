@@ -52,9 +52,19 @@ namespace Cardgame.App.GameLogic
             gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap3), new PointF(490, 30));
             gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap4), new PointF(720, 30));
 
-            gameState.PlaceCard(Card.Diamonds11, GetSlotKey(SimpleSlot.Swap1));
-            gameState.PlaceCard(Card.Diamonds7, GetSlotKey(SimpleSlot.Swap1));
-            gameState.PlaceCard(Card.Diamonds12, GetSlotKey(SimpleSlot.Swap2));
+            var slots = new List<SimpleSlot>
+            {
+                SimpleSlot.Swap1,
+                SimpleSlot.Swap2,
+                SimpleSlot.Swap3,
+                SimpleSlot.Swap4
+            };
+            var slotIndex = 0;
+            var allCards = GetAllCards(true);
+            foreach (var card in allCards)
+            {
+                gameState.PlaceCard(card, GetSlotKey(slots[slotIndex++ % slots.Count]));
+            }
 
             renderer.Resume();
 
@@ -63,17 +73,11 @@ namespace Cardgame.App.GameLogic
             OnMeasurementComplete(new MeasurementCompleteEventArgs(sw.ElapsedMilliseconds));
         }
 
-        private PointF RandomPosition()
-        {
-            var r = new Random();
-
-            return new PointF(r.Next(300), r.Next(300));
-        }
+        Random r = new Random();
 
         private Card RandomCard()
         {
             var possibleCardNames = Enum.GetNames(typeof(Card));
-            var r = new Random();
             var next = r.Next(possibleCardNames.Length);
 
             return (Card)Enum.Parse(typeof(Card), possibleCardNames[next]);
@@ -89,5 +93,35 @@ namespace Cardgame.App.GameLogic
             return (SimpleSlot)Enum.Parse(typeof(SimpleSlot), key);
         }
 
+
+        private IEnumerable<Card> GetAllCards(bool randomize)
+        {
+            var allCards = Enum.GetNames(typeof(Card)).Select(cn => (Card)Enum.Parse(typeof(Card), cn)).ToArray();
+
+            if (randomize)
+            {
+                DoInPlaceRandomization(allCards);
+            }
+
+            return allCards;
+        }
+
+        private void DoInPlaceRandomization<T>(IList<T> array)
+        {
+            var l = array.Count;
+
+            var random = new Random();
+            // While there remain elements to shuffle…
+            while (l > 0)
+            {
+                // Pick a remaining element…
+                var i = (int)(random.NextDouble() * l--);
+
+                // And swap it with the current element.
+                var t = array[l];
+                array[l] = array[i];
+                array[i] = t;
+            }
+        }
     }
 }

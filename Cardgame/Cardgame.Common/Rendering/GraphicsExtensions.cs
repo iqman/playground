@@ -13,9 +13,9 @@ namespace Cardgame.Common.Rendering
         public static void DrawRoundedRectangle(this Graphics graphics, Pen pen, RectangleF bounds, int cornerRadius)
         {
             if (graphics == null)
-                throw new ArgumentNullException("graphics");
+                throw new ArgumentNullException(nameof(graphics));
             if (pen == null)
-                throw new ArgumentNullException("pen");
+                throw new ArgumentNullException(nameof(pen));
 
             using (GraphicsPath path = RoundedRect(bounds, cornerRadius))
             {
@@ -26,9 +26,9 @@ namespace Cardgame.Common.Rendering
         public static void FillRoundedRectangle(this Graphics graphics, Brush brush, RectangleF bounds, int cornerRadius)
         {
             if (graphics == null)
-                throw new ArgumentNullException("graphics");
+                throw new ArgumentNullException(nameof(graphics));
             if (brush == null)
-                throw new ArgumentNullException("brush");
+                throw new ArgumentNullException(nameof(brush));
 
             using (GraphicsPath path = RoundedRect(bounds, cornerRadius))
             {

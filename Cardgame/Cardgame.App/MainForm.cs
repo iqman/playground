@@ -29,10 +29,10 @@ namespace Cardgame.App
             GameController.MeasurementComplete += (s, args) => labelMeasurement.Text = args.Result.ToString();
         }
 
-        public event EventHandler<ViewportUpdatedEventArgs> ViewportUpdated;
-        protected void OnViewportUpdated(ViewportUpdatedEventArgs args)
+        public event EventHandler ViewportUpdated;
+        protected void OnViewportUpdated()
         {
-            ViewportUpdated?.Invoke(this, args);
+            ViewportUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         public event EventHandler<MouseEventArgs> ViewportMouseUp;
@@ -100,7 +100,7 @@ namespace Cardgame.App
 
         private void MainForm_ResizeEnd(object sender, EventArgs e)
         {
-            OnViewportUpdated(new ViewportUpdatedEventArgs(pictureBoxMain.Width, pictureBoxMain.Height));
+            OnViewportUpdated();
         }
     }
 }

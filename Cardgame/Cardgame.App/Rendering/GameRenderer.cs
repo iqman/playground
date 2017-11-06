@@ -16,9 +16,8 @@ namespace Cardgame.App.Rendering
         private readonly IViewport viewport;
         private readonly IGameState gameState;
         private readonly FaceCache faceCache;
-        private bool suspended = false;
+        private bool suspended;
         private Image renderImage;
-        private Brush cardEdgeBrush;
         private Brush cardBackgroundBrush;
         private Pen cardEdgePen;
         private Pen slotPen;
@@ -38,7 +37,7 @@ namespace Cardgame.App.Rendering
 
             InitalizeRendering();
 
-            RecreateRenderTarget(viewport.Width, viewport.Height);
+            RecreateRenderTarget();
         }
 
         private void GameState_StateUpdated(object sender, EventArgs e)
@@ -48,18 +47,17 @@ namespace Cardgame.App.Rendering
 
         private void InitalizeRendering()
         {
-            cardEdgeBrush = Brushes.Black;
             cardBackgroundBrush = Brushes.White;
             cardEdgePen = Pens.Black;
             slotPen = new Pen(Color.Black, 3);
         }
 
-        private void Viewport_OnViewportUpdated(object sender, ViewportUpdatedEventArgs e)
+        private void Viewport_OnViewportUpdated(object sender, EventArgs e)
         {
-            RecreateRenderTarget(e.Width, e.Height);
+            RecreateRenderTarget();
         }
 
-        private void RecreateRenderTarget(int width, int height)
+        private void RecreateRenderTarget()
         {
             var oldImage = renderImage;
 
@@ -69,12 +67,9 @@ namespace Cardgame.App.Rendering
                 renderImage = new Bitmap(viewport.Width, viewport.Height, g);
             }
 
-            this.viewport.SetImage(renderImage);
+            viewport.SetImage(renderImage);
 
-            if (oldImage != null)
-            {
-                oldImage.Dispose();
-            }
+            oldImage?.Dispose();
 
             Render();
         }

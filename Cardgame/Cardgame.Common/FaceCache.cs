@@ -10,7 +10,7 @@ namespace Cardgame.Common
 {
     public class FaceCache
     {
-        private IDictionary<Card, string> cardToFaceResourceStringMap = new Dictionary<Card, string>() {
+        private readonly IDictionary<Card, string> cardToFaceResourceStringMap = new Dictionary<Card, string> {
 
             { Card.Diamonds1, "Cardgame.Common.faces.1_of_diamonds.png"},
             { Card.Diamonds2, "Cardgame.Common.faces.2_of_diamonds.png"},
@@ -70,9 +70,9 @@ namespace Cardgame.Common
         public const int CardWidth = 222;
         public const int CardHeight = 323;
 
-        private IDictionary<Card, Image> cardToFaceImageMap = new Dictionary<Card, Image>();
-        private Image slotImage;
-        private Image backImage;
+        private readonly IDictionary<Card, Image> cardToFaceImageMap = new Dictionary<Card, Image>();
+        private readonly Image slotImage;
+        private readonly Image backImage;
 
         public FaceCache()
         {
