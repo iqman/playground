@@ -33,11 +33,8 @@ namespace Cardgame.App.GameLogic
 
         private void Interactor_CardDragStopped(object sender, CardDragStoppedEventArgs e)
         {
-            if (e.TargetSlotKey != null)
-            {
-                gameState.RemoveCard(e.Card);
-                gameState.PlaceCard(e.Card, e.TargetSlotKey);
-            }
+            gameState.MoveCardsToSlot(e.Cards, e.TargetSlotKey);
+            e.DragAccepted = true;
         }
 
         public void Start()
@@ -60,10 +57,10 @@ namespace Cardgame.App.GameLogic
                 SimpleSlot.Swap4
             };
             var slotIndex = 0;
-            var allCards = GetAllCards(true);
-            foreach (var card in allCards)
+            var deck = GenerateDeck(true);
+            foreach (var card in deck)
             {
-                gameState.PlaceCard(card, GetSlotKey(slots[slotIndex++ % slots.Count]));
+                gameState.PlaceCard(GetSlotKey(slots[slotIndex++ % slots.Count]), card);
             }
 
             renderer.Resume();
@@ -75,12 +72,12 @@ namespace Cardgame.App.GameLogic
 
         Random r = new Random();
 
-        private Card RandomCard()
+        private Face RandomCard()
         {
-            var possibleCardNames = Enum.GetNames(typeof(Card));
+            var possibleCardNames = Enum.GetNames(typeof(Face));
             var next = r.Next(possibleCardNames.Length);
 
-            return (Card)Enum.Parse(typeof(Card), possibleCardNames[next]);
+            return (Face)Enum.Parse(typeof(Face), possibleCardNames[next]);
         }
 
         private string GetSlotKey(SimpleSlot slot)
@@ -94,16 +91,18 @@ namespace Cardgame.App.GameLogic
         }
 
 
-        private IEnumerable<Card> GetAllCards(bool randomize)
+        private IEnumerable<Card> GenerateDeck(bool randomize)
         {
-            var allCards = Enum.GetNames(typeof(Card)).Select(cn => (Card)Enum.Parse(typeof(Card), cn)).ToArray();
+            var allFaces = Enum.GetNames(typeof(Face)).Select(cn => (Face)Enum.Parse(typeof(Face), cn)).ToArray();
+
+            var deck = allFaces.Select(f => new Card(Guid.NewGuid().ToString(), f)).ToList();
 
             if (randomize)
             {
-                DoInPlaceRandomization(allCards);
+                DoInPlaceRandomization(deck);
             }
 
-            return allCards;
+            return deck.Take(10);
         }
 
         private void DoInPlaceRandomization<T>(IList<T> array)

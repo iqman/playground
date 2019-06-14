@@ -1,19 +1,17 @@
 ﻿using Cardgame.Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cardgame.App
 {
     class CardDragStartedEventArgs
     {
-        public CardDragStartedEventArgs(Card card)
+        public CardDragStartedEventArgs(IList<Card> cards, string sourceSlotKey)
         {
-            Card = card;
+            Cards = cards;
+            SourceSlotKey = sourceSlotKey;
         }
 
-        public Card Card { get; }
+        public IList<Card> Cards { get; set; }
+        public string SourceSlotKey { get; set; }
     }
 }

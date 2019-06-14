@@ -10,7 +10,7 @@ namespace Cardgame.App
 {
     class CardInfo
     {
-        public Card Card { get; set; }
+        public Face Face { get; set; }
         public PointF Position { get; set; }
     }
 }

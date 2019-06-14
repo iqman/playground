@@ -1,21 +1,18 @@
 ﻿using Cardgame.Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cardgame.App
 {
     class CardDragStoppedEventArgs
     {
-        public CardDragStoppedEventArgs(Card card, string targetSlotKey)
+        public CardDragStoppedEventArgs(IList<Card> cards, string targetSlotKey)
         {
-            Card = card;
+            Cards = cards;
             TargetSlotKey = targetSlotKey;
         }
 
-        public Card Card { get; }
+        public IList<Card> Cards { get; }
         public string TargetSlotKey { get; }
+        public bool DragAccepted { get; set; }
     }
 }

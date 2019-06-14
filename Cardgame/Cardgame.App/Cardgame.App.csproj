@@ -70,7 +70,6 @@
     <Compile Include="GameLogic\SimpleSlot.cs" />
     <Compile Include="GameLogic\Interactor.cs" />
     <Compile Include="GameLogic\SimpleGameState.cs" />
-    <Compile Include="GameLogic\SlotInfo.cs" />
     <Compile Include="IGameController.cs" />
     <Compile Include="IGameState.cs" />
     <Compile Include="IInteractor.cs" />

@@ -71,8 +71,8 @@ namespace Cardgame.App
 
         void IViewport.Invalidate()
         {
-           // pictureBoxMain.Invalidate();
-            pictureBoxMain.Refresh();
+            pictureBoxMain.Invalidate();
+           // pictureBoxMain.Refresh();
         }
 
         private void pictureBoxMain_MouseDown(object sender, MouseEventArgs e)

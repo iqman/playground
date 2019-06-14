@@ -2,23 +2,34 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cardgame.Common;
 
 namespace Cardgame.App.GameLogic
 {
     class SimpleGameState : IGameState
     {
-        private readonly IDictionary<string, SlotInfo> slots = new Dictionary<string, SlotInfo>();
-        
+        private readonly IDictionary<string, Slot> slots = new Dictionary<string, Slot>();
+
+        public IList<Card> CardsBeingDragged { get; set; }
+
         public event EventHandler StateUpdated;
         protected void OnStateUpdated()
         {
             StateUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        public void PlaceCard(Card card, string slotKey)
+        public void MoveSlot(string slotKey, PointF newPosition)
+        {
+            if (!slots.ContainsKey(slotKey))
+            {
+                throw new InvalidOperationException();
+            }
+
+            slots[slotKey].Position = newPosition;
+            OnStateUpdated();
+        }
+
+        public void PlaceCard(string slotKey, Card card)
         {
             if (!slots.ContainsKey(slotKey))
             {
@@ -37,27 +48,37 @@ namespace Cardgame.App.GameLogic
             {
                 slot.Value.Cards.Remove(card);
             }
+            OnStateUpdated();
         }
 
-        public IDictionary<string, SlotInfo> GetAllSlots()
+        public IList<Slot> GetSlots()
         {
-            return slots;
+            return slots.Values.ToList();
         }
 
-        public SlotInfo GetSlot(string slotKey)
+        public IList<Card> GetCards(string slotKey)
         {
             if (!slots.ContainsKey(slotKey))
             {
                 throw new InvalidOperationException();
             }
 
-            return slots[slotKey];
+            return slots[slotKey].Cards.ToList();
         }
-
+        
         public void CreateSlot(string key, PointF position)
         {
-            slots.Add(key, new SlotInfo(position));
+            slots.Add(key, new Slot(key, position));
             OnStateUpdated();
+        }
+
+        public void MoveCardsToSlot(IList<Card> cards, string slotKey)
+        {
+            foreach (var card in cards)
+            {
+                RemoveCard(card);
+                PlaceCard(slotKey, card);
+            }
         }
     }
 }

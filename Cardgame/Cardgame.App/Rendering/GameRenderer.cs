@@ -3,11 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cardgame.Common.Rendering;
-using System.Drawing.Imaging;
-using Cardgame.App.GameLogic;
 
 namespace Cardgame.App.Rendering
 {
@@ -24,7 +20,7 @@ namespace Cardgame.App.Rendering
         const int CardCornerRadius = 10;
         const int CardStackVerticalSpacing = 40;
 
-        private (Card card, PointF p)? cardDragPositionOverride;
+       // private (Face face, PointF p)? cardDragPositionOverride;
 
         public GameRenderer(IViewport viewport, IGameState gameState, FaceCache faceCache)
         {
@@ -93,15 +89,15 @@ namespace Cardgame.App.Rendering
         private void RenderSlots(Graphics g)
         {
             (Card draggedCard, PointF position)? foundDraggedCard = null;
-            var slots = gameState.GetAllSlots();
+            var slots = gameState.GetSlots();
             foreach (var slot in slots)
             {
-                var position = Point.Round(slot.Value.Position);
+                var position = Point.Round(slot.Position);
                 var cardRect = CreateCardRect(position);
                 g.DrawRoundedRectangle(slotPen, cardRect, CardCornerRadius);
                 //  g.DrawImage(faceCache.GetSlot(), Point.Round(slot));
 
-                var foundForCurrentSlot = RenderSlotCards(g, slot.Value.Cards, position);
+                var foundForCurrentSlot = RenderSlotCards(g, slot.Cards, position);
                 foundDraggedCard = foundDraggedCard ?? foundForCurrentSlot;
             }
 
@@ -118,11 +114,11 @@ namespace Cardgame.App.Rendering
             foreach (var card in cards)
             {
                 var thisCardPosition = position;
-                if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.card == card)
-                {
-                    thisCardPosition = Point.Round(cardDragPositionOverride.Value.p);
-                    foundDraggedCard = (card, thisCardPosition);
-                }
+                //if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.face == face)
+                //{
+                //    thisCardPosition = Point.Round(cardDragPositionOverride.Value.p);
+                //    foundDraggedCard = (face, thisCardPosition);
+                //}
 
                 RenderSingleCard(g, card, thisCardPosition);
 
@@ -137,7 +133,7 @@ namespace Cardgame.App.Rendering
             var cardRect = CreateCardRect(position);
 
             g.FillRoundedRectangle(cardBackgroundBrush, cardRect, CardCornerRadius);
-            g.DrawImage(faceCache.GetFace(card), position);
+            g.DrawImage(faceCache.GetFace(card.Face), position);
             g.DrawRoundedRectangle(cardEdgePen, cardRect, CardCornerRadius);
         }
 
@@ -146,38 +142,38 @@ namespace Cardgame.App.Rendering
             return new RectangleF(p.X, p.Y, FaceCache.CardWidth, FaceCache.CardHeight);
         }
 
-        public PointF OffsetToCardCenter(PointF cardTopLeft)
+        public PointF GetCardCenterFromCardTopLeft(PointF cardTopLeft)
         {
             return new PointF(cardTopLeft.X + FaceCache.CardWidth / 2, cardTopLeft.Y + FaceCache.CardHeight / 2);
         }
 
         public RectangleF GetCardBounds(Card card)
         {
-            var slots = gameState.GetAllSlots();
-            var slotsContainingCard = slots.Where(slot => slot.Value.Cards.Contains(card));
+            var slots = gameState.GetSlots();
+            var slotsContainingCard = slots.Where(slot => slot.Cards.Contains(card));
 
-            if (slotsContainingCard.Count() == 0)
+            if (!slotsContainingCard.Any())
             {
                 return RectangleF.Empty;
             }
 
             var slotContainingCard = slotsContainingCard.Single();
 
-            var slotPosition = slotContainingCard.Value.Position;
+            var slotPosition = slotContainingCard.Position;
 
-            var p = new PointF(slotPosition.X, slotPosition.Y + CardStackVerticalSpacing * slotContainingCard.Value.Cards.IndexOf(card));
+            var p = new PointF(slotPosition.X, slotPosition.Y + CardStackVerticalSpacing * slotContainingCard.Cards.IndexOf(card));
 
-            if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.card == card)
-            {
-                p = cardDragPositionOverride.Value.p;
-            }
+            //if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.face == face)
+            //{
+            //    p = cardDragPositionOverride.Value.p;
+            //}
 
             return CreateCardRect(p);
         }
 
         public RectangleF GetSlotBounds(string slotKey)
         {
-            var p = gameState.GetAllSlots()[slotKey].Position;
+            var p = gameState.GetSlots().Single(s => s.Key == slotKey).Position;
             if (p == PointF.Empty)
             {
                 return RectangleF.Empty;
@@ -186,17 +182,17 @@ namespace Cardgame.App.Rendering
             return CreateCardRect(p);
         }
 
-        public void RenderCardDrag(Card card, PointF p)
-        {
-            cardDragPositionOverride = (card, p);
-            Render();
-        }
+        //public void RenderCardDrag(Face face, PointF p)
+        //{
+        //    cardDragPositionOverride = (face, p);
+        //    Render();
+        //}
 
-        public void ClearCardDrag()
-        {
-            cardDragPositionOverride = null;
-            Render();
-        }
+        //public void ClearCardDrag()
+        //{
+        //    cardDragPositionOverride = null;
+        //    Render();
+        //}
 
         public void Suspend()
         {

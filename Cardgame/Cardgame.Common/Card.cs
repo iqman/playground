@@ -6,64 +6,41 @@ using System.Threading.Tasks;
 
 namespace Cardgame.Common
 {
-    public enum Card
+    public class Card : IEquatable<Card>
     {
-        Diamonds1,
-        Diamonds2,
-        Diamonds3,
-        Diamonds4,
-        Diamonds5,
-        Diamonds6,
-        Diamonds7,
-        Diamonds8,
-        Diamonds9,
-        Diamonds10,
-        Diamonds11,
-        Diamonds12,
-        Diamonds13,
+        public Card(string id, Face face)
+        {
+            Id = id ?? throw new ArgumentNullException(nameof(id));
+            Face = face;
+        }
 
-        Spades1,
-        Spades2,
-        Spades3,
-        Spades4,
-        Spades5,
-        Spades6,
-        Spades7,
-        Spades8,
-        Spades9,
-        Spades10,
-        Spades11,
-        Spades12,
-        Spades13,
+        public Face Face { get; set; }
+        public string Id { get; set; }
 
-        Hearts1,
-        Hearts2,
-        Hearts3,
-        Hearts4,
-        Hearts5,
-        Hearts6,
-        Hearts7,
-        Hearts8,
-        Hearts9,
-        Hearts10,
-        Hearts11,
-        Hearts12,
-        Hearts13,
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Card);
+        }
 
-        Clubs1,
-        Clubs2,
-        Clubs3,
-        Clubs4,
-        Clubs5,
-        Clubs6,
-        Clubs7,
-        Clubs8,
-        Clubs9,
-        Clubs10,
-        Clubs11,
-        Clubs12,
-        Clubs13,
+        public bool Equals(Card other)
+        {
+            return other != null &&
+                   Id == other.Id;
+        }
 
-        Joker
+        public override int GetHashCode()
+        {
+            return 2108858624 + EqualityComparer<string>.Default.GetHashCode(Id);
+        }
+
+        public static bool operator ==(Card card1, Card card2)
+        {
+            return EqualityComparer<Card>.Default.Equals(card1, card2);
+        }
+
+        public static bool operator !=(Card card1, Card card2)
+        {
+            return !(card1 == card2);
+        }
     }
 }

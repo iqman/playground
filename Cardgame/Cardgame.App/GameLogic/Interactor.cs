@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cardgame.App.GameLogic
 {
@@ -14,8 +12,9 @@ namespace Cardgame.App.GameLogic
         private readonly IMouseInputProxy mouseInputProxy;
         private readonly IGameState gameState;
         private readonly GameRenderer renderer;
+        private const string DragSlotKey = "InteractionDragSlot";
 
-        public (Card card, PointF offset)? CardBeingDragged { get; set; }
+        private CardDragInfo cardDragInfo;
 
         public event EventHandler<CardDragStartedEventArgs> CardDragStarted;
         protected void OnCardDragStarted(CardDragStartedEventArgs args)
@@ -34,75 +33,155 @@ namespace Cardgame.App.GameLogic
             this.mouseInputProxy = mouseInputProxy;
             this.gameState = gameState;
             this.renderer = renderer;
-            mouseInputProxy.ViewportMouseDown += MouseInputProxy_ViewportMouseDown;
-            mouseInputProxy.ViewportMouseUp += MouseInputProxy_ViewportMouseUp;
-            mouseInputProxy.ViewportMouseMove += MouseInputProxy_ViewportMouseMove;
-            mouseInputProxy.ViewportMouseLeave += MouseInputProxy_ViewportMouseLeave;
+            this.mouseInputProxy.ViewportMouseDown += MouseInputProxy_ViewportMouseDown;
+            this.mouseInputProxy.ViewportMouseUp += MouseInputProxy_ViewportMouseUp;
+            this.mouseInputProxy.ViewportMouseMove += MouseInputProxy_ViewportMouseMove;
+            this.mouseInputProxy.ViewportMouseLeave += MouseInputProxy_ViewportMouseLeave;
+
+            this.gameState.CreateSlot(DragSlotKey, PointF.Empty);
         }
 
         private void MouseInputProxy_ViewportMouseLeave(object sender, EventArgs e)
         {
-            CardBeingDragged = null;
+            if (IsDragging())
+            {
+                RevertDrag();
+            }
         }
 
         private void MouseInputProxy_ViewportMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if(CardBeingDragged != null)
+            if(IsDragging())
             {
-                var cardTopLeft = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
-                renderer.RenderCardDrag(CardBeingDragged.Value.card, cardTopLeft);
+                var cardTopLeft = new PointF(e.Location.X - cardDragInfo.Offset.X, e.Location.Y - cardDragInfo.Offset.Y);
+                //  renderer.RenderCardDrag(CardBeingDragged.Value.face, cardTopLeft);
+                gameState.MoveSlot(DragSlotKey, cardTopLeft);
             }
         }
 
         private void MouseInputProxy_ViewportMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (CardBeingDragged != null)
+            StopCardDrag(e.Location);
+        }
+
+        private void StopCardDrag(Point location)
+        {
+            if (IsDragging())
             {
-                var cardTopLeft = new PointF(e.Location.X - CardBeingDragged.Value.offset.X, e.Location.Y - CardBeingDragged.Value.offset.Y);
-                var draggedCardCenter = renderer.OffsetToCardCenter(cardTopLeft);
+                var cardTopLeft = new PointF(location.X - cardDragInfo.Offset.X, location.Y - cardDragInfo.Offset.Y);
+                var draggedCardCenter = renderer.GetCardCenterFromCardTopLeft(cardTopLeft);
                 var targetSlotKey = GetTargetSlotKey(draggedCardCenter);
-                OnCardDragStopped(new CardDragStoppedEventArgs(CardBeingDragged.Value.card, targetSlotKey));
+
+                if (targetSlotKey != null)
+                {
+                    var args = new CardDragStoppedEventArgs(cardDragInfo.Cards, targetSlotKey);
+                    OnCardDragStopped(args);
+
+                    if (args.DragAccepted)
+                    {
+                        StopDrag();
+                    }
+                    else
+                    {
+                        RevertDrag();
+                    }
+                }
+                else
+                {
+                    RevertDrag();
+                }
             }
-            CardBeingDragged = null;
-            renderer.ClearCardDrag();
         }
 
         private void MouseInputProxy_ViewportMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            CardBeingDragged = GetClickedCard(e.Location);
-            if (CardBeingDragged != null)
+            StartDrag(e.Location);
+        }
+
+        private void RevertDrag()
+        {
+            MoveCardBeingDraggedAndCardsOnTopOfIt(DragSlotKey, cardDragInfo.SourceSlotKey);
+            StopDrag();
+        }
+
+        private void StopDrag()
+        {
+            cardDragInfo = null;
+        }
+
+        private bool IsDragging()
+        {
+            return cardDragInfo != null;
+        }
+
+        private void MoveCardBeingDraggedAndCardsOnTopOfIt(string fromSlot, string toSlot)
+        {
+            var cards = gameState.GetCards(fromSlot);
+
+            var dragBottomCard = cardDragInfo.Cards.First();
+            var foundCard = false;
+            for (var i = 0; i < cards.Count; i++)
             {
-                OnCardDragStarted(new CardDragStartedEventArgs(CardBeingDragged.Value.card));
+                var card = cards[i];
+                if (card == dragBottomCard || foundCard)
+                {
+                    foundCard = true;
+                    gameState.RemoveCard(card);
+                    gameState.PlaceCard(toSlot, card);
+                //    i--;
+                }
             }
         }
 
-        private (Card card, PointF offset)? GetClickedCard(PointF position)
+        private void StartDrag(PointF position)
         {
-            var slots = gameState.GetAllSlots();
+            var slots = gameState.GetSlots();
+
+            var foundCard = false;
+            var cardsBeingDragged = new List<Card>();
 
             foreach (var slot in slots)
             {
-                // reverse to check last cards the ones on the top) before the ones below
+                // reverse to check last cards (the ones on the top) before the ones below
                 // as the rendering may draw them partially on top of each other
-                var cards = slot.Value.Cards.Reverse();
+                var cards = slot.Cards.Reverse();
 
                 foreach (var card in cards)
                 {
                     var bounds = renderer.GetCardBounds(card);
                     if (bounds.Contains(position))
                     {
-                        var offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y);
-                        return (card, offset);
+                        foundCard = true;
+                        cardDragInfo = new CardDragInfo
+                        {
+                            Offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y),
+                            SourceSlotKey = slot.Key
+                        };
                     }
+
+                    if (foundCard)
+                    {
+                        cardsBeingDragged.Add(card);
+                    }
+                }
+                if (foundCard)
+                {
+                    break;
                 }
             }
 
-            return null;
+            if (foundCard)
+            {
+                cardDragInfo.Cards = cardsBeingDragged;
+
+                MoveCardBeingDraggedAndCardsOnTopOfIt(cardDragInfo.SourceSlotKey, DragSlotKey);
+                OnCardDragStarted(new CardDragStartedEventArgs(cardDragInfo.Cards, cardDragInfo.SourceSlotKey));
+            }
         }
 
         private string GetTargetSlotKey(PointF position)
         {
-            var slots = gameState.GetAllSlots();
+            var slots = gameState.GetSlots().Where(s => s.Key != DragSlotKey);
 
             foreach (var slot in slots)
             {
@@ -114,6 +193,14 @@ namespace Cardgame.App.GameLogic
             }
 
             return null;
+        }
+
+        private class CardDragInfo
+        {
+            internal PointF Offset { get; set; }
+
+            public IList<Card> Cards { get; set; }
+            public string SourceSlotKey { get; set; }
         }
     }
 }
