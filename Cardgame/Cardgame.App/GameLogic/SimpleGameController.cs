@@ -15,6 +15,7 @@ namespace Cardgame.App.GameLogic
         private readonly IGameState gameState;
         private readonly IInteractor interactor;
         private readonly GameRenderer renderer;
+        private string dragSourceSlotKey;
 
         public event EventHandler<MeasurementCompleteEventArgs> MeasurementComplete;
         protected void OnMeasurementComplete(MeasurementCompleteEventArgs args)
@@ -37,6 +38,7 @@ namespace Cardgame.App.GameLogic
             if (IsDragLegal(e.Card, e.SourceSlotKey))
             {
                 e.IsLegal = true;
+                dragSourceSlotKey = e.SourceSlotKey;
                 DragCardAndFollowers(e.Card, e.SourceSlotKey);
             }
         }
@@ -71,10 +73,16 @@ namespace Cardgame.App.GameLogic
 
         private void Interactor_CardDragStopped(object sender, CardDragStoppedEventArgs e)
         {
-            if (e.TargetSlotKey != null)
+            if (e.TargetSlotKey == null)
+            {
+                gameState.MoveDraggedCardsToSlot(dragSourceSlotKey);
+            }
+            else
             {
                 gameState.MoveDraggedCardsToSlot(e.TargetSlotKey);
             }
+
+            dragSourceSlotKey = null;
         }
 
         public void Start()

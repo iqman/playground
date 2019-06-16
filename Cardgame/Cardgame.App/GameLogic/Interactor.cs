@@ -131,11 +131,11 @@ namespace Cardgame.App.GameLogic
 
         private string GetTargetSlotKey(PointF position)
         {
-            var slots = gameState.GetSlots();//.Where(s => s.Key != DragSlotKey);
+            var slots = gameState.GetSlots();
 
             foreach (var slot in slots)
             {
-                var bounds = renderer.GetSlotBounds(slot.Key);
+                var bounds = renderer.GetSlotBounds(slot.Key, slot.Cards.Count);
                 if (bounds.Contains(position))
                 {
                     return slot.Key;

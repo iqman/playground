@@ -161,7 +161,7 @@ namespace Cardgame.App.Rendering
             return CreateCardRect(p);
         }
 
-        public RectangleF GetSlotBounds(string slotKey)
+        public RectangleF GetSlotBounds(string slotKey, int cardsCount)
         {
             var p = gameState.GetSlots().Single(s => s.Key == slotKey).Position;
             if (p == PointF.Empty)
@@ -169,7 +169,10 @@ namespace Cardgame.App.Rendering
                 return RectangleF.Empty;
             }
 
-            return CreateCardRect(p);
+            var baseRect = CreateCardRect(p);
+            baseRect.Height += cardsCount * CardStackVerticalSpacing;
+
+            return baseRect;
         }
 
         //public void RenderCardDrag(Face face, PointF p)
