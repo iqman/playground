@@ -10,7 +10,7 @@ namespace Cardgame.App.GameLogic
     {
         private readonly IDictionary<string, Slot> slots = new Dictionary<string, Slot>();
 
-        public IList<Card> CardsBeingDragged { get; set; }
+        public IList<Card> CardsBeingDragged { get; } = new List<Card>();
 
         public event EventHandler StateUpdated;
         protected void OnStateUpdated()
@@ -79,6 +79,25 @@ namespace Cardgame.App.GameLogic
                 RemoveCard(card);
                 PlaceCard(slotKey, card);
             }
+        }
+
+        public void MoveToDragSlot(IList<Card> cards)
+        {
+            foreach (var card in cards)
+            {
+                RemoveCard(card);
+                CardsBeingDragged.Add(card);
+            }
+            OnStateUpdated();
+        }
+
+        public void MoveDraggedCardsToSlot(string slotKey)
+        {
+            foreach (var card in CardsBeingDragged)
+            {
+                PlaceCard(slotKey, card);
+            }
+            CardsBeingDragged.Clear();
         }
     }
 }

@@ -11,5 +11,6 @@ namespace Cardgame.App
     {
         event EventHandler<CardDragStartedEventArgs> CardDragStarted;
         event EventHandler<CardDragStoppedEventArgs> CardDragStopped;
+     //   event EventHandler<DragUpdatedEventArgs> DragUpdated;
     }
 }

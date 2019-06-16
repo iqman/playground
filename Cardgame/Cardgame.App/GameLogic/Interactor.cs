@@ -12,7 +12,6 @@ namespace Cardgame.App.GameLogic
         private readonly IMouseInputProxy mouseInputProxy;
         private readonly IGameState gameState;
         private readonly GameRenderer renderer;
-        private const string DragSlotKey = "InteractionDragSlot";
 
         private CardDragInfo cardDragInfo;
 
@@ -37,15 +36,13 @@ namespace Cardgame.App.GameLogic
             this.mouseInputProxy.ViewportMouseUp += MouseInputProxy_ViewportMouseUp;
             this.mouseInputProxy.ViewportMouseMove += MouseInputProxy_ViewportMouseMove;
             this.mouseInputProxy.ViewportMouseLeave += MouseInputProxy_ViewportMouseLeave;
-
-            this.gameState.CreateSlot(DragSlotKey, PointF.Empty);
         }
 
         private void MouseInputProxy_ViewportMouseLeave(object sender, EventArgs e)
         {
             if (IsDragging())
             {
-                RevertDrag();
+                StopDrag(null);
             }
         }
 
@@ -53,15 +50,22 @@ namespace Cardgame.App.GameLogic
         {
             if(IsDragging())
             {
-                var cardTopLeft = new PointF(e.Location.X - cardDragInfo.Offset.X, e.Location.Y - cardDragInfo.Offset.Y);
-                //  renderer.RenderCardDrag(CardBeingDragged.Value.face, cardTopLeft);
-                gameState.MoveSlot(DragSlotKey, cardTopLeft);
+                UpdateDragPosition(e.Location);
             }
         }
 
         private void MouseInputProxy_ViewportMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             StopCardDrag(e.Location);
+        }
+
+        private void UpdateDragPosition(Point p)
+        {
+            if (IsDragging())
+            {
+                var cardTopLeft = new PointF(p.X - cardDragInfo.Offset.X, p.Y - cardDragInfo.Offset.Y);
+                renderer.RenderDrag(cardTopLeft);
+            }
         }
 
         private void StopCardDrag(Point location)
@@ -72,40 +76,19 @@ namespace Cardgame.App.GameLogic
                 var draggedCardCenter = renderer.GetCardCenterFromCardTopLeft(cardTopLeft);
                 var targetSlotKey = GetTargetSlotKey(draggedCardCenter);
 
-                if (targetSlotKey != null)
-                {
-                    var args = new CardDragStoppedEventArgs(cardDragInfo.Cards, targetSlotKey);
-                    OnCardDragStopped(args);
-
-                    if (args.DragAccepted)
-                    {
-                        StopDrag();
-                    }
-                    else
-                    {
-                        RevertDrag();
-                    }
-                }
-                else
-                {
-                    RevertDrag();
-                }
+                StopDrag(targetSlotKey);
             }
         }
 
         private void MouseInputProxy_ViewportMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             StartDrag(e.Location);
+            UpdateDragPosition(e.Location);
         }
 
-        private void RevertDrag()
+        private void StopDrag(string targetSlotKey)
         {
-            MoveCardBeingDraggedAndCardsOnTopOfIt(DragSlotKey, cardDragInfo.SourceSlotKey);
-            StopDrag();
-        }
-
-        private void StopDrag()
-        {
+            OnCardDragStopped(new CardDragStoppedEventArgs(targetSlotKey));
             cardDragInfo = null;
         }
 
@@ -114,31 +97,9 @@ namespace Cardgame.App.GameLogic
             return cardDragInfo != null;
         }
 
-        private void MoveCardBeingDraggedAndCardsOnTopOfIt(string fromSlot, string toSlot)
-        {
-            var cards = gameState.GetCards(fromSlot);
-
-            var dragBottomCard = cardDragInfo.Cards.First();
-            var foundCard = false;
-            for (var i = 0; i < cards.Count; i++)
-            {
-                var card = cards[i];
-                if (card == dragBottomCard || foundCard)
-                {
-                    foundCard = true;
-                    gameState.RemoveCard(card);
-                    gameState.PlaceCard(toSlot, card);
-                //    i--;
-                }
-            }
-        }
-
         private void StartDrag(PointF position)
         {
             var slots = gameState.GetSlots();
-
-            var foundCard = false;
-            var cardsBeingDragged = new List<Card>();
 
             foreach (var slot in slots)
             {
@@ -151,37 +112,26 @@ namespace Cardgame.App.GameLogic
                     var bounds = renderer.GetCardBounds(card);
                     if (bounds.Contains(position))
                     {
-                        foundCard = true;
-                        cardDragInfo = new CardDragInfo
+                        var args = new CardDragStartedEventArgs(card, slot.Key);
+                        OnCardDragStarted(args);
+
+                        if (args.IsLegal)
                         {
-                            Offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y),
-                            SourceSlotKey = slot.Key
-                        };
-                    }
+                            cardDragInfo = new CardDragInfo
+                            {
+                                Offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y)
+                            };
+                        }
 
-                    if (foundCard)
-                    {
-                        cardsBeingDragged.Add(card);
+                        return;
                     }
                 }
-                if (foundCard)
-                {
-                    break;
-                }
-            }
-
-            if (foundCard)
-            {
-                cardDragInfo.Cards = cardsBeingDragged;
-
-                MoveCardBeingDraggedAndCardsOnTopOfIt(cardDragInfo.SourceSlotKey, DragSlotKey);
-                OnCardDragStarted(new CardDragStartedEventArgs(cardDragInfo.Cards, cardDragInfo.SourceSlotKey));
             }
         }
 
         private string GetTargetSlotKey(PointF position)
         {
-            var slots = gameState.GetSlots().Where(s => s.Key != DragSlotKey);
+            var slots = gameState.GetSlots();//.Where(s => s.Key != DragSlotKey);
 
             foreach (var slot in slots)
             {
@@ -198,9 +148,6 @@ namespace Cardgame.App.GameLogic
         private class CardDragInfo
         {
             internal PointF Offset { get; set; }
-
-            public IList<Card> Cards { get; set; }
-            public string SourceSlotKey { get; set; }
         }
     }
 }

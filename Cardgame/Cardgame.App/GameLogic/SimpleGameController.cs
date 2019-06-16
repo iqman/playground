@@ -28,13 +28,53 @@ namespace Cardgame.App.GameLogic
             this.interactor = interactor;
             this.renderer = renderer;
 
+            interactor.CardDragStarted += Interactor_CardDragStarted;
             interactor.CardDragStopped += Interactor_CardDragStopped;
+        }
+
+        private void Interactor_CardDragStarted(object sender, CardDragStartedEventArgs e)
+        {
+            if (IsDragLegal(e.Card, e.SourceSlotKey))
+            {
+                e.IsLegal = true;
+                DragCardAndFollowers(e.Card, e.SourceSlotKey);
+            }
+        }
+
+        private void DragCardAndFollowers(Card cardInitiallyDragged, string sourceSlotKey)
+        {
+            var allDraggedCards = DetermineAllDraggedCards(cardInitiallyDragged, sourceSlotKey);
+            gameState.MoveToDragSlot(allDraggedCards);
+        }
+
+        private IList<Card> DetermineAllDraggedCards(Card cardInitiallyDragged, string sourceSlotKey)
+        {
+            IList<Card> allCardsDragged = new List<Card>();
+            var addRemainingSlot = false;
+            var cards = gameState.GetCards(sourceSlotKey);
+
+            foreach (var card in cards)
+            {
+                if (addRemainingSlot || card == cardInitiallyDragged)
+                {
+                    allCardsDragged.Add(card);
+                    addRemainingSlot = true;
+                }
+            }
+            return allCardsDragged;
+        }
+
+        private bool IsDragLegal(Card card, string sourceSlotKey)
+        {
+            return true;
         }
 
         private void Interactor_CardDragStopped(object sender, CardDragStoppedEventArgs e)
         {
-            gameState.MoveCardsToSlot(e.Cards, e.TargetSlotKey);
-            e.DragAccepted = true;
+            if (e.TargetSlotKey != null)
+            {
+                gameState.MoveDraggedCardsToSlot(e.TargetSlotKey);
+            }
         }
 
         public void Start()

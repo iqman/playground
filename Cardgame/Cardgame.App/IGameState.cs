@@ -15,8 +15,11 @@ namespace Cardgame.App
         void PlaceCard(string slotKey, Card card);
         void RemoveCard(Card card);
         void MoveCardsToSlot(IList<Card> cards, string slotKey);
-        IList<Card> CardsBeingDragged { get; set; }
+        IList<Card> CardsBeingDragged { get; }
 
         event EventHandler StateUpdated;
+
+        void MoveToDragSlot(IList<Card> cards);
+        void MoveDraggedCardsToSlot(string slotKey);
     }
 }

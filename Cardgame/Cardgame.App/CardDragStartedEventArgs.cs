@@ -5,13 +5,15 @@ namespace Cardgame.App
 {
     class CardDragStartedEventArgs
     {
-        public CardDragStartedEventArgs(IList<Card> cards, string sourceSlotKey)
+        public CardDragStartedEventArgs(Card card, string sourceSlotKey)
         {
-            Cards = cards;
+            Card = card;
             SourceSlotKey = sourceSlotKey;
         }
 
-        public IList<Card> Cards { get; set; }
+        public Card Card { get; set; }
         public string SourceSlotKey { get; set; }
+
+        public bool IsLegal { get; set; }
     }
 }

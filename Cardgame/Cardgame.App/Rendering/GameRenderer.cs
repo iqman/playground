@@ -70,8 +70,17 @@ namespace Cardgame.App.Rendering
             Render();
         }
 
+        public void RenderDrag(PointF position)
+        {
+            RenderInternal(position);
+        }
+
         public void Render()
         {
+            RenderInternal(PointF.Empty);
+        }
+        private void RenderInternal(PointF dragPosition)
+        { 
             if(suspended)
             {
                 return;
@@ -81,6 +90,11 @@ namespace Cardgame.App.Rendering
             {
                 g.Clear(Color.Transparent);
                 RenderSlots(g);
+
+                if (!dragPosition.IsEmpty)
+                {
+                    RenderSlot(g, gameState.CardsBeingDragged, dragPosition);
+                }
             }
 
             viewport.Invalidate();
@@ -88,50 +102,31 @@ namespace Cardgame.App.Rendering
 
         private void RenderSlots(Graphics g)
         {
-            (Card draggedCard, PointF position)? foundDraggedCard = null;
             var slots = gameState.GetSlots();
             foreach (var slot in slots)
             {
-                var position = Point.Round(slot.Position);
-                var cardRect = CreateCardRect(position);
+                var cardRect = CreateCardRect(slot.Position);
                 g.DrawRoundedRectangle(slotPen, cardRect, CardCornerRadius);
-                //  g.DrawImage(faceCache.GetSlot(), Point.Round(slot));
-
-                var foundForCurrentSlot = RenderSlotCards(g, slot.Cards, position);
-                foundDraggedCard = foundDraggedCard ?? foundForCurrentSlot;
-            }
-
-            if (foundDraggedCard != null)
-            {
-                RenderSingleCard(g, foundDraggedCard.Value.draggedCard, foundDraggedCard.Value.position);
+                RenderSlot(g, slot.Cards, slot.Position);
             }
         }
 
-        private (Card draggedCard, PointF position)? RenderSlotCards(Graphics g, IList<Card> cards, Point position)
+        private void RenderSlot(Graphics g, IList<Card> cards, PointF position)
         {
-            (Card draggedCard, PointF position)? foundDraggedCard = null;
+            var thisCardPosition = position;
 
             foreach (var card in cards)
             {
-                var thisCardPosition = position;
-                //if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.face == face)
-                //{
-                //    thisCardPosition = Point.Round(cardDragPositionOverride.Value.p);
-                //    foundDraggedCard = (face, thisCardPosition);
-                //}
-
                 RenderSingleCard(g, card, thisCardPosition);
-
-                position.Y += CardStackVerticalSpacing;
+                thisCardPosition.Y += CardStackVerticalSpacing;
             }
-
-            return foundDraggedCard;
         }
 
         private void RenderSingleCard(Graphics g, Card card, PointF position)
         {
             var cardRect = CreateCardRect(position);
 
+            // Card faces are transparent. TODO: make cards have white background to avoid extra draw call
             g.FillRoundedRectangle(cardBackgroundBrush, cardRect, CardCornerRadius);
             g.DrawImage(faceCache.GetFace(card.Face), position);
             g.DrawRoundedRectangle(cardEdgePen, cardRect, CardCornerRadius);
@@ -162,11 +157,6 @@ namespace Cardgame.App.Rendering
             var slotPosition = slotContainingCard.Position;
 
             var p = new PointF(slotPosition.X, slotPosition.Y + CardStackVerticalSpacing * slotContainingCard.Cards.IndexOf(card));
-
-            //if (cardDragPositionOverride.HasValue && cardDragPositionOverride.Value.face == face)
-            //{
-            //    p = cardDragPositionOverride.Value.p;
-            //}
 
             return CreateCardRect(p);
         }
