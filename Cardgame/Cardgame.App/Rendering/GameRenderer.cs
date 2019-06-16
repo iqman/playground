@@ -13,14 +13,13 @@ namespace Cardgame.App.Rendering
         private readonly IGameState gameState;
         private readonly FaceCache faceCache;
         private bool suspended;
-        private Image renderImage;
+        private readonly BufferedGraphicsContext context;
+        private BufferedGraphics grafx;
         private Brush cardBackgroundBrush;
         private Pen cardEdgePen;
         private Pen slotPen;
         const int CardCornerRadius = 10;
         const int CardStackVerticalSpacing = 40;
-
-       // private (Face face, PointF p)? cardDragPositionOverride;
 
         public GameRenderer(IViewport viewport, IGameState gameState, FaceCache faceCache)
         {
@@ -33,6 +32,7 @@ namespace Cardgame.App.Rendering
 
             InitalizeRendering();
 
+            context = BufferedGraphicsManager.Current;
             RecreateRenderTarget();
         }
 
@@ -55,17 +55,12 @@ namespace Cardgame.App.Rendering
 
         private void RecreateRenderTarget()
         {
-            var oldImage = renderImage;
+            context.MaximumBuffer = new Size(viewport.Width + 1, viewport.Height + 1);
 
-            using (Graphics g = Graphics.FromImage(faceCache.GetSlot()))
-            {
-                // create the new bitmap using the resolution of one of the cards
-                renderImage = new Bitmap(viewport.Width, viewport.Height, g);
-            }
+            grafx?.Dispose();
 
-            viewport.SetImage(renderImage);
-
-            oldImage?.Dispose();
+            grafx = context.Allocate(viewport.CreateGraphics(),
+                new Rectangle(0, 0, viewport.Width, viewport.Height));
 
             Render();
         }
@@ -86,9 +81,9 @@ namespace Cardgame.App.Rendering
                 return;
             }
 
-            using (var g = Graphics.FromImage(renderImage))
+            var g = grafx.Graphics;
             {
-                g.Clear(Color.Transparent);
+                g.Clear(Color.LightGray);
                 RenderSlots(g);
 
                 if (!dragPosition.IsEmpty)
@@ -97,7 +92,7 @@ namespace Cardgame.App.Rendering
                 }
             }
 
-            viewport.Invalidate();
+            grafx.Render(Graphics.FromHwnd(viewport.Handle));
         }
 
         private void RenderSlots(Graphics g)
@@ -174,18 +169,6 @@ namespace Cardgame.App.Rendering
 
             return baseRect;
         }
-
-        //public void RenderCardDrag(Face face, PointF p)
-        //{
-        //    cardDragPositionOverride = (face, p);
-        //    Render();
-        //}
-
-        //public void ClearCardDrag()
-        //{
-        //    cardDragPositionOverride = null;
-        //    Render();
-        //}
 
         public void Suspend()
         {

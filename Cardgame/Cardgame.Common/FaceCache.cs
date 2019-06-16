@@ -94,7 +94,9 @@ namespace Cardgame.Common
         public Image CacheBitmap(string path)
         {
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
-            return new Bitmap(stream);
+            var b = new Bitmap(stream);
+            b.SetResolution(96, 96);
+            return b;
         }
 
         public Image GetFace(Face face)

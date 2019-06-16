@@ -1,12 +1,4 @@
-﻿using Cardgame.Common;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
 
 namespace Cardgame.App
@@ -15,10 +7,6 @@ namespace Cardgame.App
     {
         public IGameController GameController { get; set; }
 
-        int IViewport.Width => pictureBoxMain.Width;
-
-        int IViewport.Height => pictureBoxMain.Height;
-
         public MainForm()
         {
             InitializeComponent();
@@ -26,7 +14,8 @@ namespace Cardgame.App
         
         private void MainForm_Load(object sender, EventArgs e)
         {
-            GameController.MeasurementComplete += (s, args) => labelMeasurement.Text = args.Result.ToString();
+            GameController.MeasurementComplete += (s, args) => Text = args.Result.ToString();
+            GameController.Start();
         }
 
         public event EventHandler ViewportUpdated;
@@ -59,22 +48,6 @@ namespace Cardgame.App
             ViewportMouseLeave?.Invoke(this, EventArgs.Empty);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            GameController.Start();
-        }
-
-        void IViewport.SetImage(Image image)
-        {
-            pictureBoxMain.Image = image;
-        }
-
-        void IViewport.Invalidate()
-        {
-            pictureBoxMain.Invalidate();
-           // pictureBoxMain.Refresh();
-        }
-
         private void pictureBoxMain_MouseDown(object sender, MouseEventArgs e)
         {
             OnViewportMouseDown(e);
@@ -82,10 +55,7 @@ namespace Cardgame.App
 
         private void pictureBoxMain_MouseMove(object sender, MouseEventArgs e)
         {
-            if (pictureBoxMain.Bounds.Contains(e.Location))
-            {
-                OnViewportMouseMove(e);
-            }
+            OnViewportMouseMove(e);
         }
 
         private void pictureBoxMain_MouseUp(object sender, MouseEventArgs e)

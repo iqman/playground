@@ -64,7 +64,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CardInfo.cs" />
     <Compile Include="CardDragStoppedEventArgs.cs" />
     <Compile Include="CardDragStartedEventArgs.cs" />
     <Compile Include="GameLogic\SimpleSlot.cs" />

@@ -11,8 +11,8 @@ namespace Cardgame.App
     {
         int Width { get; }
         int Height { get; }
-        void SetImage(Image image);
-        void Invalidate();
+        Graphics CreateGraphics();
+        IntPtr Handle { get; }
         event EventHandler ViewportUpdated;
     }
 }
