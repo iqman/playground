@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cardgame.Common;
 using System.Drawing;
+using Cardgame.Common;
 
-namespace Cardgame.App
+namespace Cardgame.App.Games
 {
     interface IGameState
     {
@@ -20,5 +20,8 @@ namespace Cardgame.App
 
         void MoveToDragSlot(IList<Card> cards);
         void MoveDraggedCardsToSlot(string slotKey);
+
+        MultiCardOperation MultiCardOperationScope();
+        void CompleteScope();
     }
 }

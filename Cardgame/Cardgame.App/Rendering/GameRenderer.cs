@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Cardgame.App.Games;
 using Cardgame.Common.Rendering;
 
 namespace Cardgame.App.Rendering

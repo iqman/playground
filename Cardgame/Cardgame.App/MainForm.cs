@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
+using Cardgame.App.Games;
 
 namespace Cardgame.App
 {
     partial class MainForm : Form, IViewport, IMouseInputProxy
     {
-        public IGameController GameController { get; set; }
+        public IGame Game { get; set; }
 
         public MainForm()
         {
@@ -14,7 +15,7 @@ namespace Cardgame.App
         
         private void MainForm_Load(object sender, EventArgs e)
         {
-            GameController.Start();
+            Game.Start();
         }
 
         public event EventHandler ViewportUpdated;

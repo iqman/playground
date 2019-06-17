@@ -1,16 +1,12 @@
-﻿using Cardgame.App.Rendering;
-using Cardgame.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Cardgame.App.Rendering;
+using Cardgame.Common;
 
-namespace Cardgame.App.GameLogic
+namespace Cardgame.App.Games.Simple
 {
-    class SimpleGameController : IGameController
+    class Simple : IGame
     {
         private readonly IGameState gameState;
         private readonly IInteractor interactor;
@@ -18,7 +14,7 @@ namespace Cardgame.App.GameLogic
         private readonly GameRenderer renderer;
         private string dragSourceSlotKey;
 
-        public SimpleGameController(IGameState gameState, IInteractor interactor, ICardShuffler shuffler, GameRenderer renderer)
+        public Simple(IGameState gameState, IInteractor interactor, ICardShuffler shuffler, GameRenderer renderer)
         {
             this.gameState = gameState;
             this.interactor = interactor;

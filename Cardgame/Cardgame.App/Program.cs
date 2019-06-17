@@ -1,5 +1,4 @@
-﻿using Cardgame.App.GameLogic;
-using Cardgame.App.Rendering;
+﻿using Cardgame.App.Rendering;
 using Cardgame.Common;
 using Ninject;
 using System;
@@ -7,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Cardgame.App.Games;
+using Cardgame.App.Games.Simple;
 
 namespace Cardgame.App
 {
@@ -27,10 +28,10 @@ namespace Cardgame.App
 
             InitializeDependencies(kernel, form);
 
-            var simpleGame = kernel.Get<IGameController>();
+            var simpleGame = kernel.Get<IGame>();
             var renderer = kernel.Get<GameRenderer>();
 
-            form.GameController = simpleGame;
+            form.Game = simpleGame;
 
             
             Application.Run(form);
@@ -41,7 +42,7 @@ namespace Cardgame.App
         static void InitializeDependencies(IKernel kernel, MainForm form)
         {
             kernel.Bind<FaceCache>().ToSelf().InSingletonScope();
-            kernel.Bind<IGameController>().To<SimpleGameController>().InSingletonScope();
+            kernel.Bind<IGame>().To<Simple>().InSingletonScope();
             kernel.Bind<GameRenderer>().ToSelf().InSingletonScope();
             kernel.Bind<IGameState>().To<SimpleGameState>().InSingletonScope();
             kernel.Bind<IInteractor>().To<Interactor>().InSingletonScope();

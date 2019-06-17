@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cardgame.Common;
 
-namespace Cardgame.App.GameLogic
+namespace Cardgame.Common
 {
     public class CardShuffler : ICardShuffler
     {

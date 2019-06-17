@@ -4,18 +4,22 @@ using System.Drawing;
 using System.Linq;
 using Cardgame.Common;
 
-namespace Cardgame.App.GameLogic
+namespace Cardgame.App.Games
 {
     class SimpleGameState : IGameState
     {
         private readonly IDictionary<string, Slot> slots = new Dictionary<string, Slot>();
+        private bool multiCardOperationInProgress;
 
         public IList<Card> CardsBeingDragged { get; } = new List<Card>();
 
         public event EventHandler StateUpdated;
         protected void OnStateUpdated()
         {
-            StateUpdated?.Invoke(this, EventArgs.Empty);
+            if (!multiCardOperationInProgress)
+            {
+                StateUpdated?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void MoveSlot(string slotKey, PointF newPosition)
@@ -74,30 +78,51 @@ namespace Cardgame.App.GameLogic
 
         public void MoveCardsToSlot(IList<Card> cards, string slotKey)
         {
-            foreach (var card in cards)
+            using (MultiCardOperationScope())
             {
-                RemoveCard(card);
-                PlaceCard(slotKey, card);
+                foreach (var card in cards)
+                {
+                    RemoveCard(card);
+                    PlaceCard(slotKey, card);
+                }
             }
         }
 
         public void MoveToDragSlot(IList<Card> cards)
         {
-            foreach (var card in cards)
+            using (MultiCardOperationScope())
             {
-                RemoveCard(card);
-                CardsBeingDragged.Add(card);
+                foreach (var card in cards)
+                {
+                    RemoveCard(card);
+                    CardsBeingDragged.Add(card);
+                }
+                OnStateUpdated();
             }
-            OnStateUpdated();
         }
 
         public void MoveDraggedCardsToSlot(string slotKey)
         {
-            foreach (var card in CardsBeingDragged)
+            using (MultiCardOperationScope())
             {
-                PlaceCard(slotKey, card);
+                foreach (var card in CardsBeingDragged)
+                {
+                    PlaceCard(slotKey, card);
+                }
+                CardsBeingDragged.Clear();
             }
-            CardsBeingDragged.Clear();
+        }
+
+        public MultiCardOperation MultiCardOperationScope()
+        {
+            multiCardOperationInProgress = true;
+            return new MultiCardOperation(this);
+        }
+
+        public void CompleteScope()
+        {
+            multiCardOperationInProgress = false;
+            OnStateUpdated();
         }
     }
 }

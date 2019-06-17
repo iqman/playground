@@ -1,7 +1,4 @@
-﻿using Cardgame.Common;
-using System.Collections.Generic;
-
-namespace Cardgame.App
+﻿namespace Cardgame.App.Games
 {
     class CardDragStoppedEventArgs
     {

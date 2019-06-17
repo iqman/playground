@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Cardgame.Common;
 
-namespace Cardgame.App.GameLogic
+namespace Cardgame.Common
 {
     public interface ICardShuffler
     {

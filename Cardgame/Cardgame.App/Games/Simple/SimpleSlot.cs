@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Cardgame.App.GameLogic
+﻿namespace Cardgame.App.Games.Simple
 {
     enum SimpleSlot
     {

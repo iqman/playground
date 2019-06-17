@@ -1,11 +1,9 @@
-﻿using Cardgame.App.Rendering;
-using Cardgame.Common;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.Linq;
+using Cardgame.App.Rendering;
 
-namespace Cardgame.App.GameLogic
+namespace Cardgame.App.Games
 {
     class Interactor : IInteractor
     {
