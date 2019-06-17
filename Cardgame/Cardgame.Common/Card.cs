@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cardgame.Common
 {
     public class Card : IEquatable<Card>
     {
-        public Card(string id, Face face)
+        public Card(string id, Face face, Side side)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Face = face;
+            Side = side;
         }
 
         public Face Face { get; set; }
+        public Side Side { get; }
         public string Id { get; set; }
 
         public override bool Equals(object obj)

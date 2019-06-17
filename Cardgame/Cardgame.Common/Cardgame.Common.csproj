@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Card.cs" />
+    <Compile Include="Orientation.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="FaceCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

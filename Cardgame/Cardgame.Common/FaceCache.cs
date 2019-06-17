@@ -101,7 +101,6 @@ namespace Cardgame.Common
 
         public Image GetFace(Face face)
         {
-           // return CacheFaceBitmap(face);
             return cardToFaceImageMap[face];
         }
 

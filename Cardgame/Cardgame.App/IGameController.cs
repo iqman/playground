@@ -9,6 +9,5 @@ namespace Cardgame.App
     interface IGameController
     {
         void Start();
-        event EventHandler<MeasurementCompleteEventArgs> MeasurementComplete;
     }
 }

@@ -123,7 +123,14 @@ namespace Cardgame.App.Rendering
 
             // Card faces are transparent. TODO: make cards have white background to avoid extra draw call
             g.FillRoundedRectangle(cardBackgroundBrush, cardRect, CardCornerRadius);
-            g.DrawImage(faceCache.GetFace(card.Face), position);
+            if (card.Side == Side.Front)
+            {
+                g.DrawImage(faceCache.GetFace(card.Face), position);
+            }
+            else
+            {
+                g.DrawImage(faceCache.GetBack(), position);
+            }
             g.DrawRoundedRectangle(cardEdgePen, cardRect, CardCornerRadius);
         }
 

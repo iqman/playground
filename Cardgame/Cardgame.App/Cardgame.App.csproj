@@ -66,6 +66,8 @@
   <ItemGroup>
     <Compile Include="CardDragStoppedEventArgs.cs" />
     <Compile Include="CardDragStartedEventArgs.cs" />
+    <Compile Include="GameLogic\CardShuffler.cs" />
+    <Compile Include="GameLogic\ICardShuffler.cs" />
     <Compile Include="GameLogic\SimpleSlot.cs" />
     <Compile Include="GameLogic\Interactor.cs" />
     <Compile Include="GameLogic\SimpleGameState.cs" />
@@ -80,7 +82,6 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MeasurementCompleteEventArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\GameRenderer.cs" />

@@ -45,7 +45,8 @@ namespace Cardgame.App
             kernel.Bind<GameRenderer>().ToSelf().InSingletonScope();
             kernel.Bind<IGameState>().To<SimpleGameState>().InSingletonScope();
             kernel.Bind<IInteractor>().To<Interactor>().InSingletonScope();
-            
+            kernel.Bind<ICardShuffler>().To<CardShuffler>().InSingletonScope();
+
             kernel.Bind<IViewport>().ToMethod(context => form);
             kernel.Bind<IMouseInputProxy>().ToMethod(context => form);
         }

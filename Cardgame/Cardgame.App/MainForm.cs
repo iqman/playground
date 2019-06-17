@@ -14,7 +14,6 @@ namespace Cardgame.App
         
         private void MainForm_Load(object sender, EventArgs e)
         {
-            GameController.MeasurementComplete += (s, args) => Text = args.Result.ToString();
             GameController.Start();
         }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Cardgame.Common;
 using System.Drawing;
-using Cardgame.App.GameLogic;
 
 namespace Cardgame.App
 {
