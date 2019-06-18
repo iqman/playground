@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using Cardgame.App.Rendering;
 using Cardgame.Common;
 
@@ -79,11 +78,13 @@ namespace Cardgame.App.Games.Simple
 
         public void Start()
         {
+            gameState.InitializeBoard(new BoardConfiguration(4, 1));
+
             renderer.Suspend();
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap1), new PointF(30, 30));
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap2), new PointF(260, 30));
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap3), new PointF(490, 30));
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap4), new PointF(720, 30));
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap1), 0, 0);
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap2), 1, 0);
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap3), 2, 0);
+            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap4), 3, 0);
 
             var slots = new List<SimpleSlot>
             {

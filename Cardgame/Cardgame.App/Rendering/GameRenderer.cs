@@ -19,8 +19,11 @@ namespace Cardgame.App.Rendering
         private Brush cardBackgroundBrush;
         private Pen cardEdgePen;
         private Pen slotPen;
+        private float cardHeight;
+        private float cardWidth;
         const int CardCornerRadius = 10;
         const int CardStackVerticalSpacing = 40;
+        private const int SlotSpacing = 10;
 
         public GameRenderer(IViewport viewport, IGameState gameState, FaceCache faceCache)
         {
@@ -30,11 +33,40 @@ namespace Cardgame.App.Rendering
 
             viewport.ViewportUpdated += Viewport_OnViewportUpdated;
             gameState.StateUpdated += GameState_StateUpdated;
+            gameState.BoardConfigurationUpdated += GameState_BoardConfigurationUpdated;
 
             InitalizeRendering();
 
             context = BufferedGraphicsManager.Current;
             RecreateRenderTarget();
+        }
+
+        private void GameState_BoardConfigurationUpdated(object sender, BoardConfigurationArgs e)
+        {
+            CalculateCardSize(e.Config);
+        }
+
+        private void CalculateCardSize(BoardConfiguration config)
+        {
+            var maxWidthOfSlotAndSpacing = ((float)viewport.Width) / config.SlotColumns;
+            var maxWidth = maxWidthOfSlotAndSpacing - SlotSpacing;
+
+            var maxHeightOfSlotAndSpacing = (float) (viewport.Height) / config.SlotRows;
+            var maxHeight = maxHeightOfSlotAndSpacing - SlotSpacing;
+
+            var widthRatio = maxWidth / FaceCache.CardWidth;
+            var heightRatio = maxHeight / FaceCache.CardHeight;
+
+            if (widthRatio < heightRatio)
+            {
+                cardHeight = widthRatio * FaceCache.CardHeight;
+                cardWidth = widthRatio * FaceCache.CardWidth;
+            }
+            else
+            {
+                cardHeight = heightRatio * FaceCache.CardHeight;
+                cardWidth = heightRatio * FaceCache.CardWidth;
+            }
         }
 
         private void GameState_StateUpdated(object sender, EventArgs e)
@@ -46,7 +78,7 @@ namespace Cardgame.App.Rendering
         {
             cardBackgroundBrush = Brushes.White;
             cardEdgePen = Pens.Black;
-            slotPen = new Pen(Color.Black, 3);
+            slotPen = new Pen(Color.Black, 2);
         }
 
         private void Viewport_OnViewportUpdated(object sender, EventArgs e)
@@ -63,7 +95,11 @@ namespace Cardgame.App.Rendering
             grafx = context.Allocate(viewport.CreateGraphics(),
                 new Rectangle(0, 0, viewport.Width, viewport.Height));
 
-            Render();
+            if (gameState.IsInitialized)
+            {
+                CalculateCardSize(gameState.BoardConfiguration);
+                Render();
+            }
         }
 
         public void RenderDrag(PointF position)
@@ -101,9 +137,9 @@ namespace Cardgame.App.Rendering
             var slots = gameState.GetSlots();
             foreach (var slot in slots)
             {
-                var cardRect = CreateCardRect(slot.Position);
+                var cardRect = CreateCardRect(CalculcateSlotPosition(slot));
                 g.DrawRoundedRectangle(slotPen, cardRect, CardCornerRadius);
-                RenderSlot(g, slot.Cards, slot.Position);
+                RenderSlot(g, slot.Cards, CalculcateSlotPosition(slot));
             }
         }
 
@@ -126,23 +162,29 @@ namespace Cardgame.App.Rendering
             g.FillRoundedRectangle(cardBackgroundBrush, cardRect, CardCornerRadius);
             if (card.Side == Side.Front)
             {
-                g.DrawImage(faceCache.GetFace(card.Face), position);
+                g.DrawImage(faceCache.GetFace(card.Face), cardRect);
             }
             else
             {
-                g.DrawImage(faceCache.GetBack(), position);
+                g.DrawImage(faceCache.GetBack(), cardRect);
             }
             g.DrawRoundedRectangle(cardEdgePen, cardRect, CardCornerRadius);
         }
 
+        private PointF CalculcateSlotPosition(Slot slot)
+        {
+            return new PointF(SlotSpacing/2.0f + (cardWidth + SlotSpacing) * slot.Column,
+                SlotSpacing / 2.0f + (cardHeight + SlotSpacing) * slot.Row);
+        }
+
         private RectangleF CreateCardRect(PointF p)
         {
-            return new RectangleF(p.X, p.Y, FaceCache.CardWidth, FaceCache.CardHeight);
+            return new RectangleF(p.X, p.Y, cardWidth, cardHeight);
         }
 
         public PointF GetCardCenterFromCardTopLeft(PointF cardTopLeft)
         {
-            return new PointF(cardTopLeft.X + FaceCache.CardWidth / 2, cardTopLeft.Y + FaceCache.CardHeight / 2);
+            return new PointF(cardTopLeft.X + cardWidth / 2, cardTopLeft.Y + cardHeight / 2);
         }
 
         public RectangleF GetCardBounds(Card card)
@@ -157,7 +199,7 @@ namespace Cardgame.App.Rendering
 
             var slotContainingCard = slotsContainingCard.Single();
 
-            var slotPosition = slotContainingCard.Position;
+            var slotPosition = CalculcateSlotPosition(slotContainingCard);
 
             var p = new PointF(slotPosition.X, slotPosition.Y + CardStackVerticalSpacing * slotContainingCard.Cards.IndexOf(card));
 
@@ -166,7 +208,7 @@ namespace Cardgame.App.Rendering
 
         public RectangleF GetSlotBounds(string slotKey, int cardsCount)
         {
-            var p = gameState.GetSlots().Single(s => s.Key == slotKey).Position;
+            var p = CalculcateSlotPosition(gameState.GetSlots().Single(s => s.Key == slotKey));
             if (p == PointF.Empty)
             {
                 return RectangleF.Empty;

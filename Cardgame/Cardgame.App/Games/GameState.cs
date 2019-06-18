@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Cardgame.Common;
 
@@ -10,10 +9,19 @@ namespace Cardgame.App.Games
     {
         private readonly IDictionary<string, Slot> slots = new Dictionary<string, Slot>();
         private bool multiCardOperationInProgress;
+        public BoardConfiguration BoardConfiguration { get; private set; }
+        public bool IsInitialized => BoardConfiguration != null;
 
         public IList<Card> CardsBeingDragged { get; } = new List<Card>();
 
         public event EventHandler StateUpdated;
+        public event EventHandler<BoardConfigurationArgs> BoardConfigurationUpdated;
+
+        protected void OnBoardConfigurationUpdated(BoardConfiguration config)
+        {
+            BoardConfigurationUpdated?.Invoke(this, new BoardConfigurationArgs(config));
+        }
+
         protected void OnStateUpdated()
         {
             if (!multiCardOperationInProgress)
@@ -22,15 +30,10 @@ namespace Cardgame.App.Games
             }
         }
 
-        public void MoveSlot(string slotKey, PointF newPosition)
+        public void InitializeBoard(BoardConfiguration config)
         {
-            if (!slots.ContainsKey(slotKey))
-            {
-                throw new InvalidOperationException();
-            }
-
-            slots[slotKey].Position = newPosition;
-            OnStateUpdated();
+            this.BoardConfiguration = config;
+            OnBoardConfigurationUpdated(config);
         }
 
         public void PlaceCard(string slotKey, Card card)
@@ -69,10 +72,10 @@ namespace Cardgame.App.Games
 
             return slots[slotKey].Cards.ToList();
         }
-        
-        public void CreateSlot(string key, PointF position)
+
+        public void CreateSlot(string key, int column, int row)
         {
-            slots.Add(key, new Slot(key, position));
+            slots.Add(key, new Slot(key, column, row));
             OnStateUpdated();
         }
 

@@ -64,8 +64,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoardConfiguration.cs" />
+    <Compile Include="Games\BoardConfigurationArgs.cs" />
     <Compile Include="Games\CardDragStoppedEventArgs.cs" />
     <Compile Include="Games\CardDragStartedEventArgs.cs" />
+    <Compile Include="Games\Klondike\Klondike.cs" />
     <Compile Include="Games\MultiCardOperation.cs" />
     <Compile Include="Games\Simple\SimpleSlot.cs" />
     <Compile Include="Games\Interactor.cs" />
@@ -130,8 +133,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Games\Klondike\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

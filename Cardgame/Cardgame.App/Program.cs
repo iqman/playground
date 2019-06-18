@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cardgame.App.Games;
+using Cardgame.App.Games.Klondike;
 using Cardgame.App.Games.Simple;
 
 namespace Cardgame.App

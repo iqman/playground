@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 
 namespace Cardgame.Common
 {
     public class Slot
     {
-        public Slot(string key, PointF position)
+        public Slot(string key, int column, int row)
         {
             Key = key;
-            Position = position;
+            Column = column;
+            Row = row;
             Cards = new List<Card>();
         }
 
         public string Key { get; }
-        public PointF Position { get; set; }
+        public int Column { get; }
+        public int Row { get; }
         public IList<Card> Cards { get; }
     }
 }

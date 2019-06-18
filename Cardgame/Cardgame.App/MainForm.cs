@@ -12,7 +12,10 @@ namespace Cardgame.App
         {
             InitializeComponent();
         }
-        
+
+        int IViewport.Width => ClientSize.Width;
+        int IViewport.Height => ClientSize.Height;
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             Game.Start();
