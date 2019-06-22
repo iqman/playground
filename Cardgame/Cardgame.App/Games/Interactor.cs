@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Cardgame.App.Rendering;
 using Cardgame.Common;
 
@@ -12,7 +13,13 @@ namespace Cardgame.App.Games
         private readonly IGameState gameState;
         private readonly GameRenderer renderer;
 
-        private CardDragInfo cardDragInfo;
+        private CardDragInfo cardDragInfo = new CardDragInfo();
+        private Point dragThreshold;
+
+        const int SM_CXDRAG = 68;
+        const int SM_CYDRAG = 69;
+        [DllImport("user32.dll")]
+        static extern int GetSystemMetrics(int index);
 
         public event EventHandler<CardClickedEventArgs> CardClicked;
         protected void OnCardClicked(CardClickedEventArgs e)
@@ -41,15 +48,18 @@ namespace Cardgame.App.Games
             this.mouseInputProxy.ViewportMouseUp += MouseInputProxy_ViewportMouseUp;
             this.mouseInputProxy.ViewportMouseMove += MouseInputProxy_ViewportMouseMove;
             this.mouseInputProxy.ViewportMouseLeave += MouseInputProxy_ViewportMouseLeave;
-            this.mouseInputProxy.ViewPortMouseClick += MouseInputProxy_ViewPortMouseClick;
+
+            dragThreshold = new Point(GetSystemMetrics(SM_CXDRAG), GetSystemMetrics(SM_CYDRAG));
         }
 
-        private void MouseInputProxy_ViewPortMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void MouseClickRegistered(Point p)
         {
+            StopDrag(null);
+
             Card foundCard = null;
             Slot foundSlot = null;
 
-            if (DetermineCardAtPosition(e.Location, ref foundCard, ref foundSlot))
+            if (DetermineCardAtPosition(p, ref foundCard, ref foundSlot))
             {
                 OnCardClicked(new CardClickedEventArgs(foundCard, foundSlot.Key));
             }
@@ -65,6 +75,12 @@ namespace Cardgame.App.Games
 
         private void MouseInputProxy_ViewportMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            if (cardDragInfo.IsMouseDownState && !IsDragging() &&
+                !IsWithinDragThreshold(cardDragInfo.MouseDownPosition, e.Location))
+            {
+                StartDrag(e.Location);
+            }
+
             if(IsDragging())
             {
                 UpdateDragPosition(e.Location);
@@ -73,7 +89,14 @@ namespace Cardgame.App.Games
 
         private void MouseInputProxy_ViewportMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            StopCardDrag(e.Location);
+            if (IsWithinDragThreshold(cardDragInfo.MouseDownPosition, e.Location))
+            {
+                MouseClickRegistered(e.Location);
+            }
+            else
+            {
+                StopCardDrag(e.Location);
+            }
         }
 
         private void UpdateDragPosition(Point p)
@@ -99,19 +122,22 @@ namespace Cardgame.App.Games
 
         private void MouseInputProxy_ViewportMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            StartDrag(e.Location);
-            UpdateDragPosition(e.Location);
+            cardDragInfo.MouseDownPosition = e.Location;
+            cardDragInfo.IsMouseDownState = true;
+            //StartDrag(e.Location);
+            //UpdateDragPosition(e.Location);
         }
 
         private void StopDrag(string targetSlotKey)
         {
             OnCardDragStopped(new CardDragStoppedEventArgs(targetSlotKey));
-            cardDragInfo = null;
+            cardDragInfo.IsDragging = false;
+            cardDragInfo.IsMouseDownState = false;
         }
 
         private bool IsDragging()
         {
-            return cardDragInfo != null;
+            return cardDragInfo.IsDragging;
         }
 
         private void StartDrag(PointF position)
@@ -128,10 +154,12 @@ namespace Cardgame.App.Games
 
                 if (args.IsLegal)
                 {
-                    cardDragInfo = new CardDragInfo
-                    {
-                        Offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y)
-                    };
+                    cardDragInfo.Offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y);
+                    cardDragInfo.IsDragging = true;
+                }
+                else
+                {
+                    StopDrag(null);
                 }
             }
         }
@@ -177,9 +205,18 @@ namespace Cardgame.App.Games
             return null;
         }
 
+        private bool IsWithinDragThreshold(Point a, Point b)
+        {
+            return a.X > b.X - dragThreshold.X && a.X < b.X + dragThreshold.X &&
+                   a.Y > b.Y - dragThreshold.Y && a.Y < b.Y + dragThreshold.Y;
+        }
+
         private class CardDragInfo
         {
-            internal PointF Offset { get; set; }
+            public Point MouseDownPosition { get; set; }
+            public PointF Offset { get; set; }
+            public bool IsDragging { get; set; }
+            public bool IsMouseDownState { get; set; }
         }
     }
 }

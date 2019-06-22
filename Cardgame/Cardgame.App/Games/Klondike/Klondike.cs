@@ -72,7 +72,7 @@ namespace Cardgame.App.Games.Klondike
 
         private bool IsDragLegal(Card card, string sourceSlotKey)
         {
-            return true;
+            return card.Side == Side.Front;
         }
 
         private void Interactor_CardDragStopped(object sender, CardDragStoppedEventArgs e)

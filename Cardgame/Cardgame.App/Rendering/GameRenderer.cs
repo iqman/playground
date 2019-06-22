@@ -145,16 +145,24 @@ namespace Cardgame.App.Rendering
 
         private void RenderSlot(Graphics g, IList<Card> cards, PointF position, SlotStackingMode stackingMode)
         {
+            if (!cards.Any())
+            {
+                return;
+            }
+
             var thisCardPosition = position;
 
-            foreach (var card in cards)
+            var cardsToRender = cards;
+
+            if (stackingMode == SlotStackingMode.TopCardVisible)
+            {
+               cardsToRender = new List<Card> {cardsToRender.Last()};
+            }
+
+            foreach (var card in cardsToRender)
             {
                 RenderSingleCard(g, card, thisCardPosition);
-
-                if (stackingMode == SlotStackingMode.AllCardsVisible)
-                {
-                    thisCardPosition.Y += CardStackVerticalSpacing;
-                }
+                thisCardPosition.Y += CardStackVerticalSpacing;
             }
         }
 
@@ -216,14 +224,18 @@ namespace Cardgame.App.Rendering
 
         public RectangleF GetSlotBounds(string slotKey, int cardsCount)
         {
-            var p = CalculcateSlotPosition(gameState.GetSlots().Single(s => s.Key == slotKey));
+            var slot = gameState.GetSlots().Single(s => s.Key == slotKey);
+            var p = CalculcateSlotPosition(slot);
             if (p == PointF.Empty)
             {
                 return RectangleF.Empty;
             }
 
             var baseRect = CreateCardRect(p);
-            baseRect.Height += cardsCount * CardStackVerticalSpacing;
+            if (slot.StackingMode == SlotStackingMode.AllCardsVisible)
+            {
+                baseRect.Height += cardsCount * CardStackVerticalSpacing;
+            }
 
             return baseRect;
         }

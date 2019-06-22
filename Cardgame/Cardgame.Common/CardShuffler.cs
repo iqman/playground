@@ -22,6 +22,15 @@ namespace Cardgame.Common
         {
             var allFaces = Enum.GetNames(typeof(Face)).Select(cn => (Face)Enum.Parse(typeof(Face), cn)).ToArray();
 
+            if (jokerCount == 0)
+            {
+                allFaces = allFaces.Where(f => f != Face.Joker).ToArray();
+            }
+            else if (jokerCount > 1)
+            {
+                allFaces = allFaces.Concat(new Face[jokerCount - 1].Select(d => Face.Joker)).ToArray();
+            }
+
             var deck = allFaces.Select(f => new Card(GenerateCardId(), f, Side.Front)).ToList();
 
             if (randomize)
