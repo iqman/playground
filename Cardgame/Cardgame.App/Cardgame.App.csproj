@@ -66,10 +66,13 @@
   <ItemGroup>
     <Compile Include="BoardConfiguration.cs" />
     <Compile Include="Games\BoardConfigurationArgs.cs" />
+    <Compile Include="Games\CardClickedEventArgs.cs" />
     <Compile Include="Games\CardDragStoppedEventArgs.cs" />
     <Compile Include="Games\CardDragStartedEventArgs.cs" />
+    <Compile Include="Games\ISharedGameLogic.cs" />
     <Compile Include="Games\Klondike\Klondike.cs" />
     <Compile Include="Games\MultiCardOperation.cs" />
+    <Compile Include="Games\SharedGameLogic.cs" />
     <Compile Include="Games\Simple\SimpleSlot.cs" />
     <Compile Include="Games\Interactor.cs" />
     <Compile Include="Games\GameState.cs" />

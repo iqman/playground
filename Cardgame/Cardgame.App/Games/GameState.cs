@@ -14,6 +14,11 @@ namespace Cardgame.App.Games
 
         public IList<Card> CardsBeingDragged { get; } = new List<Card>();
 
+        public void UpdateCard(Card card)
+        {
+            OnStateUpdated();
+        }
+
         public event EventHandler StateUpdated;
         public event EventHandler<BoardConfigurationArgs> BoardConfigurationUpdated;
 
@@ -73,13 +78,13 @@ namespace Cardgame.App.Games
             return slots[slotKey].Cards.ToList();
         }
 
-        public void CreateSlot(string key, int column, int row)
+        public void CreateSlot(Slot slot)
         {
-            slots.Add(key, new Slot(key, column, row));
+            slots.Add(slot.Key, slot);
             OnStateUpdated();
         }
 
-        public void MoveCardsToSlot(IList<Card> cards, string slotKey)
+        public void MoveCardsToSlot(IEnumerable<Card> cards, string slotKey)
         {
             using (MultiCardOperationScope())
             {
@@ -91,7 +96,7 @@ namespace Cardgame.App.Games
             }
         }
 
-        public void MoveToDragSlot(IList<Card> cards)
+        public void MoveToDragSlot(IEnumerable<Card> cards)
         {
             using (MultiCardOperationScope())
             {

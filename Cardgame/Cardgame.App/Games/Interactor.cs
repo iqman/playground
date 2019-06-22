@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using Cardgame.App.Rendering;
+using Cardgame.Common;
 
 namespace Cardgame.App.Games
 {
@@ -12,6 +13,12 @@ namespace Cardgame.App.Games
         private readonly GameRenderer renderer;
 
         private CardDragInfo cardDragInfo;
+
+        public event EventHandler<CardClickedEventArgs> CardClicked;
+        protected void OnCardClicked(CardClickedEventArgs e)
+        {
+            CardClicked?.Invoke(this, e);
+        }
 
         public event EventHandler<CardDragStartedEventArgs> CardDragStarted;
         protected void OnCardDragStarted(CardDragStartedEventArgs args)
@@ -34,6 +41,18 @@ namespace Cardgame.App.Games
             this.mouseInputProxy.ViewportMouseUp += MouseInputProxy_ViewportMouseUp;
             this.mouseInputProxy.ViewportMouseMove += MouseInputProxy_ViewportMouseMove;
             this.mouseInputProxy.ViewportMouseLeave += MouseInputProxy_ViewportMouseLeave;
+            this.mouseInputProxy.ViewPortMouseClick += MouseInputProxy_ViewPortMouseClick;
+        }
+
+        private void MouseInputProxy_ViewPortMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            Card foundCard = null;
+            Slot foundSlot = null;
+
+            if (DetermineCardAtPosition(e.Location, ref foundCard, ref foundSlot))
+            {
+                OnCardClicked(new CardClickedEventArgs(foundCard, foundSlot.Key));
+            }
         }
 
         private void MouseInputProxy_ViewportMouseLeave(object sender, EventArgs e)
@@ -97,6 +116,28 @@ namespace Cardgame.App.Games
 
         private void StartDrag(PointF position)
         {
+            Card foundCard = null;
+            Slot foundSlot = null;
+
+            if (DetermineCardAtPosition(position, ref foundCard, ref foundSlot))
+            {
+                var bounds = renderer.GetCardBounds(foundCard);
+
+                var args = new CardDragStartedEventArgs(foundCard, foundSlot.Key);
+                OnCardDragStarted(args);
+
+                if (args.IsLegal)
+                {
+                    cardDragInfo = new CardDragInfo
+                    {
+                        Offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y)
+                    };
+                }
+            }
+        }
+
+        private bool DetermineCardAtPosition(PointF position, ref Card foundCard, ref Slot foundSlot)
+        {
             var slots = gameState.GetSlots();
 
             foreach (var slot in slots)
@@ -110,21 +151,14 @@ namespace Cardgame.App.Games
                     var bounds = renderer.GetCardBounds(card);
                     if (bounds.Contains(position))
                     {
-                        var args = new CardDragStartedEventArgs(card, slot.Key);
-                        OnCardDragStarted(args);
-
-                        if (args.IsLegal)
-                        {
-                            cardDragInfo = new CardDragInfo
-                            {
-                                Offset = new PointF(position.X - bounds.Location.X, position.Y - bounds.Location.Y)
-                            };
-                        }
-
-                        return;
+                        foundCard = card;
+                        foundSlot = slot;
+                        return true;
                     }
                 }
             }
+
+            return false;
         }
 
         private string GetTargetSlotKey(PointF position)

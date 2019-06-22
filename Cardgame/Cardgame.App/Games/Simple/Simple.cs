@@ -11,14 +11,16 @@ namespace Cardgame.App.Games.Simple
         private readonly IInteractor interactor;
         private readonly ICardShuffler shuffler;
         private readonly GameRenderer renderer;
+        private readonly ISharedGameLogic sharedGameLogic;
         private string dragSourceSlotKey;
 
-        public Simple(IGameState gameState, IInteractor interactor, ICardShuffler shuffler, GameRenderer renderer)
+        public Simple(IGameState gameState, IInteractor interactor, ICardShuffler shuffler, GameRenderer renderer, ISharedGameLogic sharedGameLogic)
         {
             this.gameState = gameState;
             this.interactor = interactor;
             this.shuffler = shuffler;
             this.renderer = renderer;
+            this.sharedGameLogic = sharedGameLogic;
 
             interactor.CardDragStarted += Interactor_CardDragStarted;
             interactor.CardDragStopped += Interactor_CardDragStopped;
@@ -30,31 +32,8 @@ namespace Cardgame.App.Games.Simple
             {
                 e.IsLegal = true;
                 dragSourceSlotKey = e.SourceSlotKey;
-                DragCardAndFollowers(e.Card, e.SourceSlotKey);
+                sharedGameLogic.DragCardAndFollowers(e.Card, e.SourceSlotKey);
             }
-        }
-
-        private void DragCardAndFollowers(Card cardInitiallyDragged, string sourceSlotKey)
-        {
-            var allDraggedCards = DetermineAllDraggedCards(cardInitiallyDragged, sourceSlotKey);
-            gameState.MoveToDragSlot(allDraggedCards);
-        }
-
-        private IList<Card> DetermineAllDraggedCards(Card cardInitiallyDragged, string sourceSlotKey)
-        {
-            IList<Card> allCardsDragged = new List<Card>();
-            var addRemainingSlot = false;
-            var cards = gameState.GetCards(sourceSlotKey);
-
-            foreach (var card in cards)
-            {
-                if (addRemainingSlot || card == cardInitiallyDragged)
-                {
-                    allCardsDragged.Add(card);
-                    addRemainingSlot = true;
-                }
-            }
-            return allCardsDragged;
         }
 
         private bool IsDragLegal(Card card, string sourceSlotKey)
@@ -81,10 +60,10 @@ namespace Cardgame.App.Games.Simple
             gameState.InitializeBoard(new BoardConfiguration(4, 1));
 
             renderer.Suspend();
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap1), 0, 0);
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap2), 1, 0);
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap3), 2, 0);
-            gameState.CreateSlot(GetSlotKey(SimpleSlot.Swap4), 3, 0);
+            gameState.CreateSlot(new Slot(GetSlotKey(SimpleSlot.Swap1), 0, 0));
+            gameState.CreateSlot(new Slot(GetSlotKey(SimpleSlot.Swap2), 1, 0));
+            gameState.CreateSlot(new Slot(GetSlotKey(SimpleSlot.Swap3), 2, 0));
+            gameState.CreateSlot(new Slot(GetSlotKey(SimpleSlot.Swap4), 3, 0));
 
             var slots = new List<SimpleSlot>
             {

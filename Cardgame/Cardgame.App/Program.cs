@@ -43,11 +43,12 @@ namespace Cardgame.App
         static void InitializeDependencies(IKernel kernel, MainForm form)
         {
             kernel.Bind<FaceCache>().ToSelf().InSingletonScope();
-            kernel.Bind<IGame>().To<Simple>().InSingletonScope();
+            kernel.Bind<IGame>().To<Klondike>().InSingletonScope();
             kernel.Bind<GameRenderer>().ToSelf().InSingletonScope();
             kernel.Bind<IGameState>().To<SimpleGameState>().InSingletonScope();
             kernel.Bind<IInteractor>().To<Interactor>().InSingletonScope();
             kernel.Bind<ICardShuffler>().To<CardShuffler>().InSingletonScope();
+            kernel.Bind<ISharedGameLogic>().To<SharedGameLogic>().InSingletonScope();
 
             kernel.Bind<IViewport>().ToMethod(context => form);
             kernel.Bind<IMouseInputProxy>().ToMethod(context => form);

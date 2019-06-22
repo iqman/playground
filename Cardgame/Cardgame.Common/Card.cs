@@ -13,7 +13,7 @@ namespace Cardgame.Common
         }
 
         public Face Face { get; set; }
-        public Side Side { get; }
+        public Side Side { get; set; }
         public string Id { get; set; }
 
         public override bool Equals(object obj)

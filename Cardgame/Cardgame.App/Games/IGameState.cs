@@ -8,21 +8,22 @@ namespace Cardgame.App.Games
     {
         IList<Card> GetCards(string slotKey);
         IList<Slot> GetSlots();
-        void CreateSlot(string key, int column, int row);
+        void CreateSlot(Slot slot);
         void PlaceCard(string slotKey, Card card);
         void RemoveCard(Card card);
-        void MoveCardsToSlot(IList<Card> cards, string slotKey);
+        void MoveCardsToSlot(IEnumerable<Card> cards, string slotKey);
         IList<Card> CardsBeingDragged { get; }
         BoardConfiguration BoardConfiguration { get; }
         bool IsInitialized { get; }
 
         void InitializeBoard(BoardConfiguration config);
-        
+
+        void UpdateCard(Card card);
 
         event EventHandler StateUpdated;
         event EventHandler<BoardConfigurationArgs> BoardConfigurationUpdated;
 
-        void MoveToDragSlot(IList<Card> cards);
+        void MoveToDragSlot(IEnumerable<Card> cards);
         void MoveDraggedCardsToSlot(string slotKey);
 
         MultiCardOperation MultiCardOperationScope();

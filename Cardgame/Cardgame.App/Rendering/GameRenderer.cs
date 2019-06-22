@@ -125,7 +125,7 @@ namespace Cardgame.App.Rendering
 
                 if (!dragPosition.IsEmpty)
                 {
-                    RenderSlot(g, gameState.CardsBeingDragged, dragPosition);
+                    RenderSlot(g, gameState.CardsBeingDragged, dragPosition, SlotStackingMode.AllCardsVisible);
                 }
             }
 
@@ -139,18 +139,22 @@ namespace Cardgame.App.Rendering
             {
                 var cardRect = CreateCardRect(CalculcateSlotPosition(slot));
                 g.DrawRoundedRectangle(slotPen, cardRect, CardCornerRadius);
-                RenderSlot(g, slot.Cards, CalculcateSlotPosition(slot));
+                RenderSlot(g, slot.Cards, CalculcateSlotPosition(slot), slot.StackingMode);
             }
         }
 
-        private void RenderSlot(Graphics g, IList<Card> cards, PointF position)
+        private void RenderSlot(Graphics g, IList<Card> cards, PointF position, SlotStackingMode stackingMode)
         {
             var thisCardPosition = position;
 
             foreach (var card in cards)
             {
                 RenderSingleCard(g, card, thisCardPosition);
-                thisCardPosition.Y += CardStackVerticalSpacing;
+
+                if (stackingMode == SlotStackingMode.AllCardsVisible)
+                {
+                    thisCardPosition.Y += CardStackVerticalSpacing;
+                }
             }
         }
 
@@ -201,7 +205,11 @@ namespace Cardgame.App.Rendering
 
             var slotPosition = CalculcateSlotPosition(slotContainingCard);
 
-            var p = new PointF(slotPosition.X, slotPosition.Y + CardStackVerticalSpacing * slotContainingCard.Cards.IndexOf(card));
+            var cardVisualOffsetInSlot = slotContainingCard.StackingMode == SlotStackingMode.AllCardsVisible
+                ? CardStackVerticalSpacing * slotContainingCard.Cards.IndexOf(card)
+                : 0;
+
+            var p = new PointF(slotPosition.X, slotPosition.Y + cardVisualOffsetInSlot);
 
             return CreateCardRect(p);
         }

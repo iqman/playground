@@ -9,6 +9,7 @@ namespace Cardgame.App
 {
     interface IMouseInputProxy
     {
+        event EventHandler<MouseEventArgs> ViewPortMouseClick;
         event EventHandler<MouseEventArgs> ViewportMouseUp;
         event EventHandler<MouseEventArgs> ViewportMouseDown;
         event EventHandler<MouseEventArgs> ViewportMouseMove;
