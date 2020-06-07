@@ -27,7 +27,6 @@ namespace SudokuSolver
             pictureBoxBoard.Image = br.RenderingImage;
 
             br.RenderingComplete += Br_RenderingComplete;
-            br.RenderBoard();
 
             solver = new SudokuSolver(board);
 
@@ -64,14 +63,16 @@ namespace SudokuSolver
             });
         }
 
-        private void Solver_StatusUpdate(string status)
+        private void Solver_StatusUpdate(StatusType type, string status)
         {
             this.InvokeIfRequired(() =>
             {
-                listBoxStatus.Items.Add(status);
-                listBoxStatus.TopIndex = listBoxStatus.Items.Count - 1;
-
-                br.RenderBoard();
+                if (type == StatusType.AutoSolving || checkBoxAnimateAutoSolve.Checked)
+                {
+                    listBoxStatus.Items.Add(status);
+                    listBoxStatus.TopIndex = listBoxStatus.Items.Count - 1;
+                    br.RenderBoard();
+                }
             });
         }
 
@@ -125,6 +126,13 @@ namespace SudokuSolver
         private void buttonAbortAutoSolve_Click(object sender, EventArgs e)
         {
             solver.StopAsyncAutoSolve();
+        }
+
+        private void buttonReset_Click(object sender, EventArgs e)
+        {
+            board.Init();
+            solver.ResetSolving();
+            br.RenderBoard();
         }
     }
 

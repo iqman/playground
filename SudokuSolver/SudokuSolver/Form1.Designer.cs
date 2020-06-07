@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.pictureBoxBoard = new System.Windows.Forms.PictureBox();
-            this.buttonInit = new System.Windows.Forms.Button();
+            this.buttonSolveStep = new System.Windows.Forms.Button();
             this.listBoxStatus = new System.Windows.Forms.ListBox();
             this.textBoxNumberToSolve = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -43,6 +43,8 @@
             this.listBoxGuessStack = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.labelNumberOfGuesses = new System.Windows.Forms.Label();
+            this.checkBoxAnimateAutoSolve = new System.Windows.Forms.CheckBox();
+            this.buttonReset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBoard)).BeginInit();
             this.SuspendLayout();
             // 
@@ -54,15 +56,15 @@
             this.pictureBoxBoard.TabIndex = 0;
             this.pictureBoxBoard.TabStop = false;
             // 
-            // buttonInit
+            // buttonSolveStep
             // 
-            this.buttonInit.Location = new System.Drawing.Point(518, 12);
-            this.buttonInit.Name = "buttonInit";
-            this.buttonInit.Size = new System.Drawing.Size(75, 23);
-            this.buttonInit.TabIndex = 1;
-            this.buttonInit.Text = "SolveStep";
-            this.buttonInit.UseVisualStyleBackColor = true;
-            this.buttonInit.Click += new System.EventHandler(this.buttonInit_Click);
+            this.buttonSolveStep.Location = new System.Drawing.Point(518, 12);
+            this.buttonSolveStep.Name = "buttonSolveStep";
+            this.buttonSolveStep.Size = new System.Drawing.Size(75, 23);
+            this.buttonSolveStep.TabIndex = 1;
+            this.buttonSolveStep.Text = "SolveStep";
+            this.buttonSolveStep.UseVisualStyleBackColor = true;
+            this.buttonSolveStep.Click += new System.EventHandler(this.buttonInit_Click);
             // 
             // listBoxStatus
             // 
@@ -185,11 +187,35 @@
             this.labelNumberOfGuesses.TabIndex = 14;
             this.labelNumberOfGuesses.Text = "0";
             // 
+            // checkBoxAnimateAutoSolve
+            // 
+            this.checkBoxAnimateAutoSolve.AutoSize = true;
+            this.checkBoxAnimateAutoSolve.Checked = true;
+            this.checkBoxAnimateAutoSolve.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAnimateAutoSolve.Location = new System.Drawing.Point(13, 593);
+            this.checkBoxAnimateAutoSolve.Name = "checkBoxAnimateAutoSolve";
+            this.checkBoxAnimateAutoSolve.Size = new System.Drawing.Size(64, 17);
+            this.checkBoxAnimateAutoSolve.TabIndex = 15;
+            this.checkBoxAnimateAutoSolve.Text = "Animate";
+            this.checkBoxAnimateAutoSolve.UseVisualStyleBackColor = true;
+            // 
+            // buttonReset
+            // 
+            this.buttonReset.Location = new System.Drawing.Point(614, 577);
+            this.buttonReset.Name = "buttonReset";
+            this.buttonReset.Size = new System.Drawing.Size(75, 23);
+            this.buttonReset.TabIndex = 16;
+            this.buttonReset.Text = "Reset";
+            this.buttonReset.UseVisualStyleBackColor = true;
+            this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(817, 614);
+            this.Controls.Add(this.buttonReset);
+            this.Controls.Add(this.checkBoxAnimateAutoSolve);
             this.Controls.Add(this.labelNumberOfGuesses);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.listBoxGuessStack);
@@ -203,7 +229,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxNumberToSolve);
             this.Controls.Add(this.listBoxStatus);
-            this.Controls.Add(this.buttonInit);
+            this.Controls.Add(this.buttonSolveStep);
             this.Controls.Add(this.pictureBoxBoard);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -216,7 +242,7 @@
         #endregion
 
         private System.Windows.Forms.PictureBox pictureBoxBoard;
-        private System.Windows.Forms.Button buttonInit;
+        private System.Windows.Forms.Button buttonSolveStep;
         private System.Windows.Forms.ListBox listBoxStatus;
         private System.Windows.Forms.TextBox textBoxNumberToSolve;
         private System.Windows.Forms.Label label1;
@@ -230,6 +256,8 @@
         private System.Windows.Forms.ListBox listBoxGuessStack;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelNumberOfGuesses;
+        private System.Windows.Forms.CheckBox checkBoxAnimateAutoSolve;
+        private System.Windows.Forms.Button buttonReset;
     }
 }
 

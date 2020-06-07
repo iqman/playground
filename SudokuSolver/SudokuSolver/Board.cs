@@ -119,7 +119,7 @@ namespace SudokuSolver
         {
             for (int i = 0; i < BoardSize * BoardSize; i++)
             {
-                cells[i].Value = game[i];
+                cells[i] = new SudokuCell {Value = game[i]};
             }
         }
 
