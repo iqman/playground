@@ -13,8 +13,10 @@ namespace SudokuSolver
 
         private readonly SudokuCell[] cells;
 
+        private readonly int[] game = RRf6bgb9GG;
+
         // https://cracking-the-cryptic.web.app/sudoku/RRf6bgb9GG
-        private readonly int[] RRf6bgb9GG =
+        private static readonly int[] RRf6bgb9GG =
         {
             6, 0, 9, 1, 0, 2, 0, 8, 0,
             0, 0, 0, 0, 0, 0, 4, 0, 0,
@@ -26,6 +28,49 @@ namespace SudokuSolver
             0, 0, 0, 0, 0, 0, 0, 0, 9,
             8, 0, 5, 9, 0, 7, 0, 4, 0
         };
+
+        // https://sudoku.game/ easy
+        private static readonly int[] Easy =
+        {
+            0, 0, 0, 0, 0, 0, 4, 0, 2,
+            0, 9, 4, 5, 0, 2, 0, 0, 0,
+            2, 0, 8, 0, 0, 0, 0, 1, 0,
+            0, 5, 3, 0, 4, 0, 0, 0, 7,
+            0, 8, 0, 1, 2, 5, 0, 6, 0,
+            1, 0, 0, 0, 6, 0, 9, 5, 0,
+            0, 7, 0, 0, 0, 0, 2, 0, 1,
+            0, 0, 0, 4, 0, 6, 8, 3, 0,
+            4, 0, 9, 0, 0, 0, 0, 0, 0
+        };
+
+        // https://sudoku.game/ medium
+        private static readonly int[] Medium =
+        {
+            0, 0, 0, 2, 0, 0, 0, 6, 4,
+            0, 6, 5, 0, 0, 3, 2, 0, 0,
+            7, 1, 2, 4, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 5, 1,
+            0, 8, 4, 0, 0, 0, 6, 7, 0,
+            2, 5, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 7, 3, 4, 9,
+            0, 0, 1, 9, 0, 0, 7, 8, 0,
+            5, 9, 0, 0, 0, 4, 0, 0, 0
+        };
+
+        // https://sudoku.game/ Hard
+        private static readonly int[] Hard =
+        {
+            0, 0, 5, 0, 6, 0, 0, 8, 0,
+            1, 4, 0, 0, 0, 0, 0, 0, 0,
+            0, 6, 9, 1, 0, 0, 0, 2, 0,
+            9, 0, 0, 0, 4, 0, 6, 0, 0,
+            0, 3, 0, 2, 8, 0, 0, 5, 0,
+            4, 0, 0, 0, 3, 6, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 7, 0, 0, 5, 0, 2,
+            2, 9, 0, 0, 0, 0, 3, 6, 0
+        };
+
 
         public Board()
         {
@@ -48,11 +93,19 @@ namespace SudokuSolver
             return b;
         }
 
+        public void Restore(Board b)
+        {
+            for (int i = 0; i < cells.Length; i++)
+            {
+                cells[i] = b.cells[i];
+            }
+        }
+
         public void Init()
         {
             for (int i = 0; i < BoardSize * BoardSize; i++)
             {
-                cells[i].Value = RRf6bgb9GG[i];
+                cells[i].Value = game[i];
             }
         }
 
@@ -173,6 +226,14 @@ namespace SudokuSolver
             for (int i = 0; i < cells.Length; i++)
             {
                 cells[i].FiftyFifties.Clear();;
+            }
+        }
+
+        public void ClearFiftyFiftiesForNumber(int number)
+        {
+            for (int i = 0; i < cells.Length; i++)
+            {
+                cells[i].FiftyFifties.Remove(number);
             }
         }
     }

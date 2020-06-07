@@ -98,6 +98,28 @@ namespace SudokuSolver
                         graphics.FillRectangle(new SolidBrush(Color.LightBlue), cellInterior);
                     }
 
+                    if (cell.FiftyFiftyExclusion)
+                    {
+                        RectangleF cellInterior = new RectangleF(
+                            drawCellSize.Width * x + Gbw * 12 + boardTopLeft.X,
+                            drawCellSize.Height * y + Gbw * 12 + boardTopLeft.Y,
+                            drawCellSize.Width - Gbw * 24,
+                            drawCellSize.Height - Gbw * 24);
+
+                        graphics.FillRectangle(new SolidBrush(Color.DarkOrange), cellInterior);
+                    }
+
+                    if (cell.Guessed)
+                    {
+                        RectangleF cellInterior = new RectangleF(
+                            drawCellSize.Width * x + Gbw * 16 + boardTopLeft.X,
+                            drawCellSize.Height * y + Gbw * 16 + boardTopLeft.Y,
+                            drawCellSize.Width - Gbw * 32,
+                            drawCellSize.Height - Gbw * 32);
+
+                        graphics.FillRectangle(new SolidBrush(Color.MediumPurple), cellInterior);
+                    }
+
                     if (cell.Value != SudokuCell.EmptyValue)
                     {
                         var s = cell.Value.ToString();
