@@ -13,7 +13,7 @@ namespace SudokuSolver
 
         private readonly SudokuCell[] cells;
 
-        private readonly int[] game = RRf6bgb9GG;
+        private readonly int[] game = VeryHard;
 
         // https://cracking-the-cryptic.web.app/sudoku/RRf6bgb9GG
         private static readonly int[] RRf6bgb9GG =
@@ -69,6 +69,20 @@ namespace SudokuSolver
             0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 7, 0, 0, 5, 0, 2,
             2, 9, 0, 0, 0, 0, 3, 6, 0
+        };
+
+        // https://sudoku.game/ Very Hard
+        private static readonly int[] VeryHard =
+        {
+            0, 5, 0, 0, 3, 2, 6, 0, 8,
+            0, 0, 0, 1, 0, 5, 7, 3, 0,
+            0, 0, 0, 0, 0, 6, 0, 0, 2,
+            0, 0, 0, 0, 5, 0, 0, 8, 7,
+            0, 0, 7, 0, 1, 0, 2, 0, 0,
+            3, 6, 0, 0, 8, 0, 0, 0, 0,
+            4, 0, 0, 7, 0, 0, 0, 0, 0,
+            0, 7, 6, 3, 0, 4, 0, 0, 0,
+            8, 0, 9, 5, 2, 0, 0, 7, 0
         };
 
 

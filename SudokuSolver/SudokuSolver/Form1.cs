@@ -15,10 +15,7 @@ namespace SudokuSolver
     {
         private readonly Board board;
         private BoardRenderer br;
-        private SoudokuSolver solver;
-
-        private int stepsSinceLastProgress;
-        private bool abortAutoSolving;
+        private SudokuSolver solver;
 
         public Form1()
         {
@@ -32,10 +29,9 @@ namespace SudokuSolver
             br.RenderingComplete += Br_RenderingComplete;
             br.RenderBoard();
 
-            solver = new SoudokuSolver(board);
+            solver = new SudokuSolver(board);
 
             solver.StatusUpdate += Solver_StatusUpdate;
-            solver.ProgressUpdate += Solver_ProgressUpdate;
             solver.GuessMade += SolverGuessMade;
             solver.GuessReverted += Solver_GuessReverted;
 
@@ -68,17 +64,14 @@ namespace SudokuSolver
             });
         }
 
-        private void Solver_ProgressUpdate()
-        {
-            stepsSinceLastProgress = 0;
-        }
-
         private void Solver_StatusUpdate(string status)
         {
             this.InvokeIfRequired(() =>
             {
                 listBoxStatus.Items.Add(status);
                 listBoxStatus.TopIndex = listBoxStatus.Items.Count - 1;
+
+                br.RenderBoard();
             });
         }
 
@@ -126,72 +119,12 @@ namespace SudokuSolver
 
         private void buttonAutoSolve_Click(object sender, EventArgs e)
         {
-            abortAutoSolving = false;
-
-            Task.Run(() =>
-            {
-                int number = 1;
-                int guesses = 0;
-                int firstLevelGuesses = 0;
-
-                while (firstLevelGuesses < 10)
-                {
-                    while (guesses < 10)
-                    {
-                        while (stepsSinceLastProgress < 10)
-                        {
-                            if (!solver.IsBoardValid())
-                            {
-                                solver.RevertToPreviousBoardSnapshot();
-                                break;
-                            }
-
-                            board.ClearExclusions();
-                            solver.SolveStep(number);
-
-                            number = number++ % Board.BoardSize + 1;
-                            stepsSinceLastProgress++;
-
-                            br.RenderBoard();
-
-                            if (abortAutoSolving)
-                            {
-                                Solver_StatusUpdate("Aborted autosolving");
-                                return;
-                            }
-                        }
-
-                        if (solver.IsDone())
-                        {
-                            Solver_StatusUpdate("Autosolving complete");
-                            return;
-                        }
-
-                        number = number++ % Board.BoardSize + 1;
-
-                        if (solver.CurrentGuessDepth == 0)
-                        {
-                            firstLevelGuesses++;
-                        }
-                        solver.MakeGuess(number);
-
-                        guesses++;
-                    }
-
-                    while (solver.CurrentGuessDepth > 0)
-                    {
-                        solver.RevertToPreviousBoardSnapshot();
-                    }
-                    guesses = 0;
-                }
-
-                Solver_StatusUpdate("Failed autosolving");
-            });
+            solver.StartAsyncAutoSolve();
         }
 
         private void buttonAbortAutoSolve_Click(object sender, EventArgs e)
         {
-            abortAutoSolving = true;
+            solver.StopAsyncAutoSolve();
         }
     }
 

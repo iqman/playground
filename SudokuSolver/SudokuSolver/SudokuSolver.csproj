@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoardRenderer.cs" />
-    <Compile Include="SoudokuSolver.cs" />
+    <Compile Include="SudokuSolver.cs" />
     <Compile Include="SudokuCell.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

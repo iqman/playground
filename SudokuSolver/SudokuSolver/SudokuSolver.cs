@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SudokuSolver
 {
-    public class SoudokuSolver
+    public class SudokuSolver
     {
         private readonly Board board;
 
         private readonly Stack<SnapShotContainer> boardSnapshots;
-        private int[] wrongGuessCounterAtCurrentLevel;
+        private readonly int[] wrongGuessCounterAtCurrentLevel;
+
+        private int stepsSinceLastProgress;
+        private bool abortAutoSolving;
 
         public event Action<string> StatusUpdate;
         protected virtual void OnStatusUpdate(string status)
         {
             StatusUpdate?.Invoke(status);
-        }
-
-        public event Action ProgressUpdate;
-        protected virtual void OnProgressUpdate()
-        {
-            ProgressUpdate?.Invoke();
         }
 
         public event Action<int> GuessMade;
@@ -35,7 +33,7 @@ namespace SudokuSolver
             GuessReverted?.Invoke();
         }
 
-        public SoudokuSolver(Board board)
+        public SudokuSolver(Board board)
         {
             this.board = board;
             boardSnapshots = new Stack<SnapShotContainer>();
@@ -63,7 +61,7 @@ namespace SudokuSolver
 
                 OnStatusUpdate($"{number}: Found");
 
-                OnProgressUpdate();
+                RegisterProgress();
             }
             else
             {
@@ -99,7 +97,7 @@ namespace SudokuSolver
                     }
                     OnStatusUpdate($"{number}: Found row 50/50");
 
-                    OnProgressUpdate();
+                    RegisterProgress();
                 }
             }
 
@@ -115,7 +113,7 @@ namespace SudokuSolver
                     }
                     OnStatusUpdate($"{number}: Found column 50/50");
 
-                    OnProgressUpdate();
+                    RegisterProgress();
                 }
             }
         }
@@ -344,11 +342,9 @@ namespace SudokuSolver
 
                     boardSnapshots.Push(new SnapShotContainer(snapshot, wrongGuessCounterAtCurrentLevel.Select(n => n).ToArray(), number));
 
-               //     Array.Clear(wrongGuessCounterAtCurrentLevel, 0, Board.BoardSize);
-
                     OnGuessMade(number);
 
-                    OnProgressUpdate();
+                    RegisterProgress();
 
                     return;
                 }
@@ -375,6 +371,79 @@ namespace SudokuSolver
                 OnGuessReverted();
             }
         }
+
+        private void RegisterProgress()
+        {
+            stepsSinceLastProgress = 0;
+        }
+
+        public void StopAsyncAutoSolve()
+        {
+            abortAutoSolving = true;
+        }
+
+        public void StartAsyncAutoSolve()
+        {
+            abortAutoSolving = false;
+
+            Task.Run(() =>
+            {
+                int number = 1;
+                int guesses = 0;
+                int firstLevelGuesses = 0;
+
+                while (firstLevelGuesses < 10)
+                {
+                    while (guesses < 10)
+                    {
+                        while (stepsSinceLastProgress < 10)
+                        {
+                            if (!IsBoardValid())
+                            {
+                                RevertToPreviousBoardSnapshot();
+                                break;
+                            }
+
+                            board.ClearExclusions();
+                            SolveStep(number);
+
+                            number = number++ % Board.BoardSize + 1;
+                            stepsSinceLastProgress++;
+
+                            if (abortAutoSolving)
+                            {
+                                OnStatusUpdate("Aborted autosolving");
+                                return;
+                            }
+                        }
+
+                        if (IsDone())
+                        {
+                            OnStatusUpdate("Autosolving complete");
+                            return;
+                        }
+
+                        number = number++ % Board.BoardSize + 1;
+
+                        if (CurrentGuessDepth == 0)
+                        {
+                            firstLevelGuesses++;
+                        }
+                        MakeGuess(number);
+
+                        guesses++;
+                    }
+
+                    while (CurrentGuessDepth > 0)
+                    {
+                        RevertToPreviousBoardSnapshot();
+                    }
+                    guesses = 0;
+                }
+
+                OnStatusUpdate("Failed autosolving");
+            });
+        }   
     }
 
     public class SnapShotContainer
