@@ -1,0 +1,50 @@
+.gridarea {
+    display: inline-block;
+    border: solid #000 1px;
+}
+
+.gridarea.left {
+    border-left-width: 5px;
+}
+.gridarea.top {
+    border-top-width: 5px;
+}
+.gridarea.right {
+    border-right-width: 5px;
+}
+.gridarea.bottom {
+    border-bottom-width: 5px;
+}
+
+
+.grid {
+    margin-left: 50px;
+    line-height: 0.5em;
+}
+
+$cellWidth: 1px;
+
+app-sudoku-cell {
+    display: inline-block;
+    border: solid gray 0px;
+}
+
+app-sudoku-cell:nth-child(1) {
+    border-width: 0px $cellWidth $cellWidth 0px;
+}
+app-sudoku-cell:nth-child(3) {
+    border-width: 0px 0px $cellWidth $cellWidth;
+}
+app-sudoku-cell:nth-child(2) {
+    border-width: 0px 0px $cellWidth 0px;
+}
+app-sudoku-cell:nth-child(7) {
+    border-width: $cellWidth $cellWidth 0px 0px;
+}
+app-sudoku-cell:nth-child(9) {
+    border-width: $cellWidth 0px 0px $cellWidth;
+}
+
+.gridrow:nth-child(3) app-sudoku-cell {
+    border-bottom-width: 0px;
+}

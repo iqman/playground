@@ -1,0 +1,33 @@
+.cell {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    position: relative;
+    background-color: rgb(238, 192, 151);
+}
+
+.cell.excluded {
+    background-color: salmon;
+}
+
+.cell.highlight {
+   // background-color: lightblue;
+}
+
+.cell .value {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px;
+    font-weight: bold;
+    font-size: large;
+}
+
+.cell.guessed .value {
+    background-color: #B10DC9;
+}
+
+.cell.highlight .value {
+    border: solid lightblue 10px;
+}

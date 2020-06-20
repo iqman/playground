@@ -1,0 +1,165 @@
+<p>sudoku-grid works!</p>
+
+<div class="grid">
+    <div class="areaRow">
+        <div class="gridarea left top">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(0)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(1)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(2)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(9)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(10)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(11)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(18)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(19)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(20)"></app-sudoku-cell>
+            </div>
+        </div>
+        <div class="gridarea top">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(3)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(4)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(5)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(12)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(13)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(14)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(21)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(22)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(23)"></app-sudoku-cell>
+            </div>
+        </div>
+        <div class="gridarea right top">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(6)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(7)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(8)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(15)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(16)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(17)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(24)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(25)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(26)"></app-sudoku-cell>
+            </div>
+        </div>
+    </div>
+
+    <div class="areaRow">
+        <div class="gridarea left">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(27)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(28)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(29)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(36)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(37)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(38)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(45)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(46)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(47)"></app-sudoku-cell>
+            </div>
+        </div>
+        <div class="gridarea">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(30)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(31)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(32)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(39)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(40)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(41)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(48)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(49)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(50)"></app-sudoku-cell>
+            </div>
+        </div>
+        <div class="gridarea right">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(33)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(34)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(35)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(42)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(43)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(44)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(51)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(52)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(53)"></app-sudoku-cell>
+            </div>
+        </div>
+    </div>
+
+    <div class="areaRow">
+        <div class="gridarea left bottom">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(54)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(55)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(56)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(63)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(64)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(65)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(72)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(73)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(74)"></app-sudoku-cell>
+            </div>
+        </div>
+        <div class="gridarea bottom">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(57)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(58)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(59)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(66)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(67)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(68)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(75)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(76)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(77)"></app-sudoku-cell>
+            </div>
+        </div>
+        <div class="gridarea right bottom">
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(60)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(61)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(62)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(69)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(70)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(71)"></app-sudoku-cell>
+            </div>
+            <div class=gridrow>
+                <app-sudoku-cell [cell]="findCell(78)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(79)"></app-sudoku-cell>
+                <app-sudoku-cell [cell]="findCell(80)"></app-sudoku-cell>
+            </div>
+        </div>
+    </div>
+</div>

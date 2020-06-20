@@ -1,0 +1,12 @@
+<div class="cell" 
+[ngClass]="'first second'"
+
+[ngClass]="{'guessed':
+    cell.guessed == true,
+    'highlight': cell.highlight == true,
+    'excluded': cell.excluded == true || cell.fiftyFiftyExclusion == true}">
+    <div class="value">{{cell.value}}</div>
+</div>
+
+
+ 
