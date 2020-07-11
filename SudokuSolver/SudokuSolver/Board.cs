@@ -13,7 +13,7 @@ namespace SudokuSolver
 
         private readonly SudokuCell[] cells;
 
-        private readonly int[] game = VeryHard;
+        private readonly int[] game = UH2020_27_SS;
 
         // https://cracking-the-cryptic.web.app/sudoku/RRf6bgb9GG
         private static readonly int[] RRf6bgb9GG =
@@ -83,6 +83,19 @@ namespace SudokuSolver
             4, 0, 0, 7, 0, 0, 0, 0, 0,
             0, 7, 6, 3, 0, 4, 0, 0, 0,
             8, 0, 9, 5, 2, 0, 0, 7, 0
+        };
+
+        private static readonly int[] UH2020_27_SS =
+        {
+            0, 0, 0, 6, 9, 0, 0, 1, 8,
+            0, 0, 9, 1, 0, 0, 0, 0, 0,
+            0, 1, 6, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 2, 0,
+            0, 0, 2, 3, 0, 4, 5, 0, 0,
+            0, 6, 7, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 7, 3, 0,
+            0, 0, 0, 0, 0, 5, 8, 0, 0,
+            4, 8, 0, 0, 7, 9, 0, 0, 0
         };
 
 
