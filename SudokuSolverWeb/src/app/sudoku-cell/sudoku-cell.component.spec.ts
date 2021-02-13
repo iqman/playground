@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SudokuCellComponent } from './sudoku-cell.component';
 
@@ -6,7 +6,7 @@ describe('SudokuCellComponent', () => {
   let component: SudokuCellComponent;
   let fixture: ComponentFixture<SudokuCellComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SudokuCellComponent ]
     })
