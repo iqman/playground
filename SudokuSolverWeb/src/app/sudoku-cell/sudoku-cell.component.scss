@@ -10,10 +10,6 @@
     background-color: salmon;
 }
 
-.cell.highlight {
-   // background-color: lightblue;
-}
-
 .cell .value {
     position: absolute;
     left: 50%;
@@ -29,5 +25,10 @@
 }
 
 .cell.highlight .value {
-    border: solid lightblue 10px;
+    border: solid lightblue 6px;
+}
+
+.cell .fiftyfifty {
+    font-size: 10px;
+    position: absolute;
 }

@@ -5,5 +5,5 @@ export class SudokuCell {
     fiftyFiftyExclusion: boolean
     guessed: boolean
 
-    //public HashSet<int> FiftyFifties { get; set; }
+    fiftyfifty: number[]
 }

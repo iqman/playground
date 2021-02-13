@@ -16,6 +16,7 @@ export class SudokuGridService {
     c.excluded = index % 2 == 0;
     c.highlight = index % 3 == 0;
     c.guessed = index % 5 == 0;
+    c.fiftyfifty = [4, 3, 8];
 
     //debugger;
 
