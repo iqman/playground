@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { SudokuSolverComponent } from './sudoku-solver/sudoku-solver.component';
 import { SudokuCellComponent } from './sudoku-cell/sudoku-cell.component';
 import { SudokuGridComponent } from './sudoku-grid/sudoku-grid.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,9 @@ import { SudokuGridComponent } from './sudoku-grid/sudoku-grid.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]
