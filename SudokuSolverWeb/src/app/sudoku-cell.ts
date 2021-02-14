@@ -1,9 +1,11 @@
 export class SudokuCell {
-    value: number
-    excluded: boolean
-    highlight: boolean
-    fiftyFiftyExclusion: boolean
-    guessed: boolean
 
-    fiftyfifty: number[]
+    constructor(
+        public value: number,
+        public excluded: boolean,
+        public highlight: boolean,
+        public fiftyFiftyExclusion: boolean,
+        public guessed: boolean,
+        public fiftyfifty: number[]
+    ) {}
 }

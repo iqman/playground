@@ -1,12 +1,28 @@
 <p>sudoku-solver works!sss</p>
 
-<mat-form-field appearance="fill">
+<mat-form-field>
     <mat-label>Starting Positions</mat-label>
-    <mat-select>
-        <mat-option *ngFor="let sp of startingPositions()" [value]="sp.id">
+    <mat-select [(value)]="selectedStartingPositionId">
+        <mat-option *ngFor="let sp of startingPositions" [value]="sp.id">
         {{sp.name}}
         </mat-option>
     </mat-select>
 </mat-form-field>
+
+<mat-form-field>
+    <mat-label>Number to solve</mat-label>
+    <mat-select [(value)]="numberToSolve">
+        <mat-option [value]="1">1</mat-option>
+        <mat-option [value]="2">2</mat-option>
+        <mat-option [value]="3">3</mat-option>
+        <mat-option [value]="4">4</mat-option>
+        <mat-option [value]="5">5</mat-option>
+        <mat-option [value]="6">6</mat-option>
+        <mat-option [value]="7">7</mat-option>
+        <mat-option [value]="8">8</mat-option>
+        <mat-option [value]="9">9</mat-option>
+    </mat-select>
+</mat-form-field>
+<button mat-stroked-button color="primary" (click)="solveStep()">Solve Step</button>
 
 <app-sudoku-grid></app-sudoku-grid>
