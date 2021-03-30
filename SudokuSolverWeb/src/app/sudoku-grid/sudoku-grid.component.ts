@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SudokuGridService } from '../sudoku-grid.service';
-import { SudokuCell } from '../sudoku-cell';
+import { Cell } from '../cell';
 
 @Component({
   selector: 'app-sudoku-grid',
@@ -14,8 +14,8 @@ export class SudokuGridComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public findCell(index: number): SudokuCell {
-    return this.grid.getCell(index);
+  public findCell(index: number): Cell {
+    return this.grid.board.cellAt(index);
   }
 
 }

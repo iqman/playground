@@ -1,6 +1,7 @@
+import { Board } from './board';
 import { StartingPosition } from './starting-position';
 import { Injectable } from '@angular/core';
-import { SudokuCell } from './sudoku-cell';
+import { Cell } from './cell';
 import { StartingPositionsService } from './starting-positions.service';
 
 @Injectable({
@@ -8,30 +9,20 @@ import { StartingPositionsService } from './starting-positions.service';
 })
 export class SudokuGridService {
 
-  private _grid: SudokuCell[];
+  _board: Board;
 
   constructor(private startingPositionService: StartingPositionsService) {
     this.reset(this.startingPositionService.getEmptyStartingPositions);
   }
 
-  private counter: number = 0;
-
-  get grid(): SudokuCell[] {
-    return this._grid;
-  }
-  public getCell(index: number): SudokuCell {
-    return this.grid[index];
-  }
-
-  public exclude(index: number) {
-    this._grid[index].excluded = true;
+  get board(): Board {
+    return this._board;
   }
 
   public reset(startingPosition: StartingPosition) {
     
-    this._grid = [];
+    this._board = new Board();
 
-    startingPosition.values.map(v => this._grid.push(new SudokuCell(v, false, false, false, false, [])));
-    
+    this._board.init(startingPosition.values);
   }
 }

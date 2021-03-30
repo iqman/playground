@@ -25,4 +25,11 @@
 </mat-form-field>
 <button mat-stroked-button color="primary" (click)="solveStep()">Solve Step</button>
 
-<app-sudoku-grid></app-sudoku-grid>
+<div class="outer">
+    <app-sudoku-grid></app-sudoku-grid>
+
+    <div class="log">
+        <h3>Log:</h3>
+        <p *ngFor="let entry of logEntries">{{entry}}</p>
+    </div>
+</div>

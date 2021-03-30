@@ -32,3 +32,15 @@
     font-size: 10px;
     position: absolute;
 }
+
+.cell .fiftyfifty div {
+    display: inline-block;
+}
+
+
+.cell .fiftyfifty div:before{
+    content: ", ";
+}
+.cell .fiftyfifty div:first-child:before{
+    content: "";
+}

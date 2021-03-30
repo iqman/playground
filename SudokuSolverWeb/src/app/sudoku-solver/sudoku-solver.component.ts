@@ -1,8 +1,10 @@
+import { StatusType } from './../status-type.enum';
 import { StartingPosition } from './../starting-position';
 import { Component, OnInit } from '@angular/core';
 import { StartingPositionsService } from '../starting-positions.service';
 import { SudokuGridService } from '../sudoku-grid.service';
 import { SolverService } from '../solver.service';
+import { Board } from '../board';
 
 @Component({
   selector: 'app-sudoku-solver',
@@ -13,12 +15,17 @@ export class SudokuSolverComponent implements OnInit {
 
   private _selectedStartingPosition: StartingPosition;
   public numberToSolve: number = 1;
+  public logEntries: string[] = [];
 
   constructor(private startingPositionService: StartingPositionsService,
     private grid: SudokuGridService,
     private solver: SolverService) {}
 
   ngOnInit(): void {
+
+    this.solver.statusUpdate = (type: StatusType, msg: string) => {
+      this.logEntries.push(msg)
+    };
   }
 
   get selectedStartingPositionId():string {
@@ -37,9 +44,8 @@ export class SudokuSolverComponent implements OnInit {
   }
 
   solveStep() {
-    
     this.solver.solveStep(this.numberToSolve);
-    this.numberToSolve = (this.numberToSolve) % 9 +1;
+    this.numberToSolve = (this.numberToSolve++ % Board.BoardSize+1);
   }
 
 }

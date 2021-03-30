@@ -1,4 +1,4 @@
-import { SudokuCell } from './../sudoku-cell';
+import { Cell } from '../cell';
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
@@ -11,7 +11,7 @@ export class SudokuCellComponent implements OnInit {
   constructor() { }
 
   @Input()
-  public cell: SudokuCell;
+  public cell: Cell;
 
   ngOnInit(): void {
   }
