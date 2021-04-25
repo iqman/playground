@@ -1,7 +1,12 @@
-﻿using System;
+﻿#define OPTIMIZATION1
+#define OPTIMIZATION2
+#define OPTIMIZATION5
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Narkhedegs.PerformanceMeasurement;
 
 namespace SudokuSolver
 {
@@ -75,7 +80,7 @@ namespace SudokuSolver
         {
             b.ClearFiftyFifties();
 
-            for (int i = 1; i < Board.BoardSize+1; i++)
+            for (int i = 1; i < Board.BoardSize + 1; i++)
             {
                 b.ClearExclusions();
                 ExcludeCells(b, i);
@@ -136,9 +141,12 @@ namespace SudokuSolver
             for (int i = 0; i < Board.BoardSize; i++)
             {
                 var set = func(i);
-
+#if OPTIMIZATION5
+                var nonExcluded = set.Where(c => !c.Excluded);
+#else
                 var nonExcluded = set.Where(c => !c.Excluded).ToArray();
-                if (nonExcluded.Length == cellsToBeFree)
+#endif
+                if (nonExcluded.Count() == cellsToBeFree)
                 {
                     freeCells.AddRange(nonExcluded);
                 }
@@ -149,7 +157,7 @@ namespace SudokuSolver
 
         private void ExcludeCells(Board b, int number)
         {
-            for (int i = 0; i < Board.BoardSize*Board.BoardSize; i++)
+            for (int i = 0; i < Board.BoardSize * Board.BoardSize; i++)
             {
                 var cell = b.CellAt(i);
 
@@ -166,19 +174,40 @@ namespace SudokuSolver
                 var column = b.GetColumn(i);
                 if (column.Any(c => c.Value == number))
                 {
+#if OPTIMIZATION2
+                    foreach (var o in b.IndicesForColumn(i))
+                    {
+                        indicesToExclude.Add(o);
+                    }
+#else
                     indicesToExclude = indicesToExclude.Union(b.IndicesForColumn(i)).ToList();
+#endif
                 }
 
                 var row = b.GetRow(i);
                 if (row.Any(c => c.Value == number))
                 {
+#if OPTIMIZATION2
+                    foreach (var o in b.IndicesForRow(i))
+                    {
+                        indicesToExclude.Add(o);
+                    }
+#else
                     indicesToExclude = indicesToExclude.Union(b.IndicesForRow(i)).ToList();
+#endif
                 }
 
                 var group = b.GetGroup(i);
                 if (group.Any(c => c.Value == number))
                 {
+#if OPTIMIZATION2
+                    foreach (var o in b.IndicesForGroup(i))
+                    {
+                        indicesToExclude.Add(o);
+                    }
+#else
                     indicesToExclude = indicesToExclude.Union(b.IndicesForGroup(i)).ToList();
+#endif
                 }
             }
 
@@ -190,34 +219,46 @@ namespace SudokuSolver
 
         public bool IsBoardValid()
         {
-            var bc = board;//.Clone();
+            var bc = board;
 
+#if OPTIMIZATION1
+#else
             bc.ClearExclusions();
+#endif
 
             bool allValid = true;
-
-            for (int number = 1; number <= Board.BoardSize; number++)
+#if OPTIMIZATION1
+            for (int i = 0; i < Board.BoardSize; i++)
+#else
+            for (int i = 1; i <= Board.BoardSize; i++)
+#endif
             {
-                ExcludeCells(bc, number);
 
-                if (!AllValid(number, bc.GetRow))
+#if OPTIMIZATION1
+#else
+                ExcludeCells(bc, i);
+#endif
+
+                if (!AllValid(i, bc.GetRow))
                 {
-                    OnStatusUpdate(StatusType.Validity, $"{number}: Found invalid row");
+                    OnStatusUpdate(StatusType.Validity, $"Row number {i} is invalid");
                     allValid = false;
                 }
-                if (!AllValid(number, bc.GetColumn))
+                if (!AllValid(i, bc.GetColumn))
                 {
-                    OnStatusUpdate(StatusType.Validity, $"{number}: Found invalid column");
-                    allValid = false;
-                }
-
-                if (!AllValid(number, bc.GetGroup))
-                {
-                    OnStatusUpdate(StatusType.Validity, $"{number}: Found invalid group");
+                    OnStatusUpdate(StatusType.Validity, $"Column number {i} is invali");
                     allValid = false;
                 }
 
+                if (!AllValid(i, bc.GetGroup))
+                {
+                    OnStatusUpdate(StatusType.Validity, $"Group number {i} is invali");
+                    allValid = false;
+                }
+#if OPTIMIZATION1
+#else
                 bc.ClearExclusions();
+#endif
             }
 
             if (allValid)
@@ -234,6 +275,10 @@ namespace SudokuSolver
 
         private bool AllValid(int number, Func<int, SudokuCell[]> func)
         {
+#if OPTIMIZATION1
+            var nonEmptyCellValues = func(number).Select(c => c.Value).Where(v => v != SudokuCell.EmptyValue).ToList();
+            return nonEmptyCellValues.Distinct().Count() == nonEmptyCellValues.Count;
+#else
             for (int i = 0; i < Board.BoardSize; i++)
             {
                 var set = func(i);
@@ -251,6 +296,7 @@ namespace SudokuSolver
             }
 
             return true;
+#endif
         }
 
         public bool IsDone()
@@ -275,9 +321,9 @@ namespace SudokuSolver
 
             UpdateAllFiftyFifties(board);
 
-            var guessesToSkipForNumber = wrongGuessCounterAtCurrentLevel[number-1];
+            var guessesToSkipForNumber = wrongGuessCounterAtCurrentLevel[number - 1];
 
-            for (int i = 0; i < Board.BoardSize*Board.BoardSize; i++)
+            for (int i = 0; i < Board.BoardSize * Board.BoardSize; i++)
             {
                 var cell = board.CellAt(i);
                 if (cell.FiftyFifties.Contains(number))
@@ -312,11 +358,11 @@ namespace SudokuSolver
                 var snapShot = boardSnapshots.Pop();
                 board.Restore(snapShot.Snapshot);
 
-                wrongGuessCounterAtCurrentLevel[snapShot.GuessedNumber-1]++;
+                wrongGuessCounterAtCurrentLevel[snapShot.GuessedNumber - 1]++;
                 if (boardSnapshots.Any())
                 {
                     var temp = boardSnapshots.Pop();
-                    temp.WrongGuessCounter[snapShot.GuessedNumber-1]++;
+                    temp.WrongGuessCounter[snapShot.GuessedNumber - 1]++;
                     boardSnapshots.Push(temp);
                 }
 
@@ -337,70 +383,7 @@ namespace SudokuSolver
         public void StartAsyncAutoSolve()
         {
             abortAutoSolving = false;
-
-            Task.Run(() =>
-            {
-                int number = 1;
-                int guesses = 0;
-                int firstLevelGuesses = 0;
-                var startTime = DateTime.Now;
-
-                while (firstLevelGuesses < 10)
-                {
-                    while (guesses < 10)
-                    {
-                        while (stepsSinceLastProgress < 10)
-                        {
-                            if (!IsBoardValid())
-                            {
-                                RevertToPreviousBoardSnapshot();
-                                break;
-                            }
-
-                            board.ClearExclusions();
-                            SolveStep(number);
-
-                            number = number++ % Board.BoardSize + 1;
-                            stepsSinceLastProgress++;
-
-                            if (abortAutoSolving)
-                            {
-                                OnStatusUpdate(StatusType.AutoSolving, "Aborted autosolving");
-                                return;
-                            }
-                        }
-
-                        if (IsDone())
-                        {
-                            OnStatusUpdate(StatusType.AutoSolving, "Autosolving complete");
-
-                            var endTime = DateTime.Now;
-                            var s = (endTime - startTime).TotalMilliseconds;
-
-                            OnStatusUpdate(StatusType.AutoSolving, $"Solve time: {s}");
-                            return;
-                        }
-
-                        number = number++ % Board.BoardSize + 1;
-
-                        if (CurrentGuessDepth == 0)
-                        {
-                            firstLevelGuesses++;
-                        }
-                        MakeGuess(number);
-
-                        guesses++;
-                    }
-
-                    while (CurrentGuessDepth > 0)
-                    {
-                        RevertToPreviousBoardSnapshot();
-                    }
-                    guesses = 0;
-                }
-
-                OnStatusUpdate(StatusType.AutoSolving, "Failed autosolving");
-            });
+            Task.Run(() => { AutoSolve(false); });
         }
 
         public void ResetSolving()
@@ -413,6 +396,102 @@ namespace SudokuSolver
             stepsSinceLastProgress = 0;
             abortAutoSolving = false;
         }
+
+        public void PerfTest()
+        {
+            var chronometer = new Chronometer(new ChronometerOptions
+            {
+                NumberOfInterations = 15,
+                Warmup = true,
+                MeasureUsingProcessorTime = false,
+                UseNormalizedMean = false,
+                AllowMeasurementsUnderDebugMode = true
+            });
+
+            var executionTimeInMilliseconds = chronometer.Measure(() =>
+            {
+                board.Init();
+                ResetSolving();
+                AutoSolve(true);
+            });
+            OnStatusUpdate(StatusType.Performance, $"Time in ms: {executionTimeInMilliseconds}");
+        }
+
+        private void AutoSolve(bool performanceTest)
+        {
+            int number = 1;
+            int guesses = 0;
+            int firstLevelGuesses = 0;
+            var startTime = DateTime.Now;
+
+            while (firstLevelGuesses < 10)
+            {
+                while (guesses < 10)
+                {
+                    while (stepsSinceLastProgress < 10)
+                    {
+                        if (!IsBoardValid())
+                        {
+                            RevertToPreviousBoardSnapshot();
+                            break;
+                        }
+
+                        board.ClearExclusions();
+                        SolveStep(number);
+
+                        number = number++ % Board.BoardSize + 1;
+                        stepsSinceLastProgress++;
+
+                        if (abortAutoSolving)
+                        {
+                            if (!performanceTest)
+                            {
+                                OnStatusUpdate(StatusType.AutoSolving, "Aborted autosolving");
+                            }
+                            return;
+                        }
+                    }
+
+                    if (IsDone())
+                    {
+                        if (!performanceTest)
+                        {
+                            OnStatusUpdate(StatusType.AutoSolving, "Autosolving complete");
+                        }
+
+                        var endTime = DateTime.Now;
+                        var s = (endTime - startTime).TotalMilliseconds;
+
+                        if (!performanceTest)
+                        {
+                            OnStatusUpdate(StatusType.AutoSolving, $"Solve time: {s}");
+                        }
+                        return;
+                    }
+
+                    number = number++ % Board.BoardSize + 1;
+
+                    if (CurrentGuessDepth == 0)
+                    {
+                        firstLevelGuesses++;
+                    }
+                    MakeGuess(number);
+
+                    guesses++;
+                }
+
+                while (CurrentGuessDepth > 0)
+                {
+                    RevertToPreviousBoardSnapshot();
+                }
+                guesses = 0;
+            }
+
+            if (!performanceTest)
+            {
+                OnStatusUpdate(StatusType.AutoSolving, "Failed autosolving");
+            }
+        }
     }
 
     public enum StatusType
@@ -420,7 +499,8 @@ namespace SudokuSolver
         Info,
         Validity,
         AutoSolving,
-        Completion
+        Completion,
+        Performance
     }
 
     public class SnapShotContainer

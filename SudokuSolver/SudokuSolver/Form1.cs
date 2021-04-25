@@ -67,7 +67,7 @@ namespace SudokuSolver
         {
             this.InvokeIfRequired(() =>
             {
-                if (type == StatusType.AutoSolving || checkBoxAnimateAutoSolve.Checked)
+                if (type == StatusType.AutoSolving || type == StatusType.Performance || checkBoxAnimateAutoSolve.Checked)
                 {
                     listBoxStatus.Items.Add(status);
                     listBoxStatus.TopIndex = listBoxStatus.Items.Count - 1;
@@ -133,6 +133,12 @@ namespace SudokuSolver
             board.Init();
             solver.ResetSolving();
             br.RenderBoard();
+        }
+
+        private void buttonPerfTest_Click(object sender, EventArgs e)
+        {
+            checkBoxAnimateAutoSolve.Checked = false;
+            solver.PerfTest();
         }
     }
 

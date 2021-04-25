@@ -45,6 +45,7 @@
             this.labelNumberOfGuesses = new System.Windows.Forms.Label();
             this.checkBoxAnimateAutoSolve = new System.Windows.Forms.CheckBox();
             this.buttonReset = new System.Windows.Forms.Button();
+            this.buttonPerfTest = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBoard)).BeginInit();
             this.SuspendLayout();
             // 
@@ -143,7 +144,7 @@
             // 
             // buttonAutoSolve
             // 
-            this.buttonAutoSolve.Location = new System.Drawing.Point(13, 535);
+            this.buttonAutoSolve.Location = new System.Drawing.Point(13, 519);
             this.buttonAutoSolve.Name = "buttonAutoSolve";
             this.buttonAutoSolve.Size = new System.Drawing.Size(75, 23);
             this.buttonAutoSolve.TabIndex = 10;
@@ -153,7 +154,7 @@
             // 
             // buttonAbortAutoSolve
             // 
-            this.buttonAbortAutoSolve.Location = new System.Drawing.Point(13, 564);
+            this.buttonAbortAutoSolve.Location = new System.Drawing.Point(13, 577);
             this.buttonAbortAutoSolve.Name = "buttonAbortAutoSolve";
             this.buttonAbortAutoSolve.Size = new System.Drawing.Size(75, 23);
             this.buttonAbortAutoSolve.TabIndex = 11;
@@ -166,7 +167,7 @@
             this.listBoxGuessStack.FormattingEnabled = true;
             this.listBoxGuessStack.Location = new System.Drawing.Point(104, 531);
             this.listBoxGuessStack.Name = "listBoxGuessStack";
-            this.listBoxGuessStack.Size = new System.Drawing.Size(146, 69);
+            this.listBoxGuessStack.Size = new System.Drawing.Size(146, 43);
             this.listBoxGuessStack.TabIndex = 12;
             // 
             // label2
@@ -192,7 +193,7 @@
             this.checkBoxAnimateAutoSolve.AutoSize = true;
             this.checkBoxAnimateAutoSolve.Checked = true;
             this.checkBoxAnimateAutoSolve.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAnimateAutoSolve.Location = new System.Drawing.Point(13, 593);
+            this.checkBoxAnimateAutoSolve.Location = new System.Drawing.Point(104, 585);
             this.checkBoxAnimateAutoSolve.Name = "checkBoxAnimateAutoSolve";
             this.checkBoxAnimateAutoSolve.Size = new System.Drawing.Size(64, 17);
             this.checkBoxAnimateAutoSolve.TabIndex = 15;
@@ -209,11 +210,22 @@
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
+            // buttonPerfTest
+            // 
+            this.buttonPerfTest.Location = new System.Drawing.Point(13, 548);
+            this.buttonPerfTest.Name = "buttonPerfTest";
+            this.buttonPerfTest.Size = new System.Drawing.Size(75, 23);
+            this.buttonPerfTest.TabIndex = 17;
+            this.buttonPerfTest.Text = "Perf test";
+            this.buttonPerfTest.UseVisualStyleBackColor = true;
+            this.buttonPerfTest.Click += new System.EventHandler(this.buttonPerfTest_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(817, 614);
+            this.Controls.Add(this.buttonPerfTest);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.checkBoxAnimateAutoSolve);
             this.Controls.Add(this.labelNumberOfGuesses);
@@ -258,6 +270,7 @@
         private System.Windows.Forms.Label labelNumberOfGuesses;
         private System.Windows.Forms.CheckBox checkBoxAnimateAutoSolve;
         private System.Windows.Forms.Button buttonReset;
+        private System.Windows.Forms.Button buttonPerfTest;
     }
 }
 

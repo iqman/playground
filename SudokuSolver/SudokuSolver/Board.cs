@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define OPTIMIZATION3
+#define OPTIMIZATION4
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -151,6 +154,12 @@ namespace SudokuSolver
         {
             var indices = IndicesForGroup(groupNumber);
             var res = new List<SudokuCell>();
+#if OPTIMIZATION4
+            foreach (var i in indices)
+            {
+                res.Add(cells[i]);
+            }
+#else
             for (int i = 0; i < cells.Length; i++)
             {
                 if (indices.Contains(i))
@@ -158,6 +167,7 @@ namespace SudokuSolver
                     res.Add(cells[i]);
                 }
             }
+#endif
             return res.ToArray();
         }
 
@@ -165,6 +175,12 @@ namespace SudokuSolver
         {
             var indices = IndicesForRow(rowNumber);
             var res = new List<SudokuCell>();
+#if OPTIMIZATION4
+            foreach (var i in indices)
+            {
+                res.Add(cells[i]);
+            }
+#else
             for (int i = 0; i < cells.Length; i++)
             {
                 if (indices.Contains(i))
@@ -172,6 +188,7 @@ namespace SudokuSolver
                     res.Add(cells[i]);
                 }
             }
+#endif
             return res.ToArray();
         }
 
@@ -179,6 +196,12 @@ namespace SudokuSolver
         {
             var indices = IndicesForColumn(columnNumber);
             var res = new List<SudokuCell>();
+#if OPTIMIZATION4
+            foreach (var i in indices)
+            {
+                res.Add(cells[i]);
+            }
+#else
             for (int i = 0; i < cells.Length; i++)
             {
                 if (indices.Contains(i))
@@ -186,58 +209,85 @@ namespace SudokuSolver
                     res.Add(cells[i]);
                 }
             }
+#endif
             return res.ToArray();
         }
 
+        private readonly Dictionary<int, int[]> rowIndiceCache = new Dictionary<int, int[]>();
         public int[] IndicesForRow(int rowNumber)
         {
-            var indices = new List<int>();
-            for (int i = 0; i < cells.Length; i++)
+#if OPTIMIZATION3
+            if (!rowIndiceCache.ContainsKey(rowNumber))
+#endif
             {
-                if (i >= BoardSize * rowNumber && i < BoardSize * (rowNumber + 1))
+                var indices = new List<int>();
+                for (int i = 0; i < cells.Length; i++)
                 {
-                    indices.Add(i);
+                    if (i >= BoardSize * rowNumber && i < BoardSize * (rowNumber + 1))
+                    {
+                        indices.Add(i);
+                    }
                 }
+                rowIndiceCache[rowNumber] = indices.ToArray();
             }
-            return indices.ToArray();
+
+            return rowIndiceCache[rowNumber];
         }
 
+        private readonly Dictionary<int, int[]> columnIndiceCache = new Dictionary<int, int[]>();
         public int[] IndicesForColumn(int columnNumber)
         {
-            var indices = new List<int>();
-            for (int i = 0; i < cells.Length; i++)
+#if OPTIMIZATION3
+            if (!columnIndiceCache.ContainsKey(columnNumber))
+#endif
             {
-                if (i % BoardSize == columnNumber)
+                var indices = new List<int>();
+                for (int i = 0; i < cells.Length; i++)
                 {
-                    indices.Add(i);
+                    if (i % BoardSize == columnNumber)
+                    {
+                        indices.Add(i);
+                    }
                 }
+                columnIndiceCache[columnNumber] = indices.ToArray();
             }
-            return indices.ToArray();
+
+            return columnIndiceCache[columnNumber];
         }
+
+        private readonly Dictionary<int, int[]> groupIndiceCache = new Dictionary<int, int[]>();
 
         public int[] IndicesForGroup(int groupNumber)
         {
-            if (groupNumber == 3 || groupNumber == 4 || groupNumber == 5)
+#if OPTIMIZATION3
+            if (!groupIndiceCache.ContainsKey(groupNumber))
+#endif
             {
-                groupNumber += 6;
-            }
-
-            if (groupNumber == 6 || groupNumber == 7 || groupNumber == 8)
-            {
-                groupNumber += 12;
-            }
-
-            var indices = new List<int>();
-            for (int i = 0; i < cells.Length; i++)
-            {
-                if (i >= (0 + groupNumber) * 3 && i < (0 + groupNumber) * 3 + 3 ||
-                    i >= (3 + groupNumber) * 3 && i < (3 + groupNumber) * 3 + 3 ||
-                    i >= (6 + groupNumber) * 3 && i < (6 + groupNumber) * 3 + 3)
+                var adjustedGroupNumber = groupNumber;
+                if (adjustedGroupNumber == 3 || adjustedGroupNumber == 4 || adjustedGroupNumber == 5)
                 {
-                    indices.Add(i);
+                    adjustedGroupNumber += 6;
                 }
+
+                if (adjustedGroupNumber == 6 || adjustedGroupNumber == 7 || adjustedGroupNumber == 8)
+                {
+                    adjustedGroupNumber += 12;
+                }
+
+                var indices = new List<int>();
+                for (int i = 0; i < cells.Length; i++)
+                {
+                    if (i >= (0 + adjustedGroupNumber) * 3 && i < (0 + adjustedGroupNumber) * 3 + 3 ||
+                        i >= (3 + adjustedGroupNumber) * 3 && i < (3 + adjustedGroupNumber) * 3 + 3 ||
+                        i >= (6 + adjustedGroupNumber) * 3 && i < (6 + adjustedGroupNumber) * 3 + 3)
+                    {
+                        indices.Add(i);
+                    }
+                }
+                groupIndiceCache[groupNumber] = indices.ToArray();
             }
-            return indices.ToArray();
+
+            return groupIndiceCache[groupNumber];
         }
 
         public void ClearExclusions()
