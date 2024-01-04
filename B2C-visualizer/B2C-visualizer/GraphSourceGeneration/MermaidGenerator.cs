@@ -33,7 +33,7 @@ graph LR";
             // Such a scenario is valid, but the default mermaid renderer crashes when trying to render this (bugs have been reported)
 
             var relations = sp.GrantedResourceAccesses.Any()
-                ? string.Join(Environment.NewLine, sp.GrantedResourceAccesses.Where(r => r.AppId != sp.AppId).SelectMany(res => res.Roles).Select(r => string.Format($"{sp.AppId.ShortenId()} --> {r.Id.ShortenId()}")))
+                ? string.Join(Environment.NewLine, sp.GrantedResourceAccesses.Where(r => r.AppId != sp.AppId).SelectMany(res => res.Roles).Select(r => $"{sp.AppId.ShortenId()} --> {r.Id.ShortenId()}"))
                 : string.Empty;
 
             return relations;
@@ -45,7 +45,7 @@ graph LR";
 
             string oauth2Permissions = GenerateOauth2RoleNodes(sp);
 
-            var subgraph = string.Format($"""
+            var subgraph = $"""
 subgraph {sp.AppId.ShortenId()}["{sp.Name}"]
   {sp.AppId.ShortenId()}_link["<u>B2C</u>"]
   style {sp.AppId.ShortenId()}_link fill:#fff0,stroke:#fff0
@@ -60,7 +60,7 @@ end
 
 click {sp.AppId.ShortenId()}_link href "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/{sp.AppId}/isMSAApp~/false"
 
-""");
+""";
 
             return subgraph;
         }
@@ -68,15 +68,15 @@ click {sp.AppId.ShortenId()}_link href "https://portal.azure.com/#view/Microsoft
         private static string GenerateOauth2RoleNodes(ServicePrincipal sp)
         {
             return sp.DefinedOauth2Permissions.Any()
-                ? string.Join(Environment.NewLine, sp.DefinedOauth2Permissions.Select(r => string.Format($"    {r.Id.ShortenId()}[\"{r.Value}\"]")))
-                : string.Format($"    {sp.AppId.ShortenId()}_oauth2_perm_none[\"`*None*`\"]");
+                ? string.Join(Environment.NewLine, sp.DefinedOauth2Permissions.Select(r => $"    {r.Id.ShortenId()}[\"{r.Value}\"]"))
+                : $"    {sp.AppId.ShortenId()}_oauth2_perm_none[\"`*None*`\"]";
         }
 
         private static string GenerateAppRoleNodes(ServicePrincipal sp)
         {
             return sp.DefinedAppRoles.Any()
-                ? string.Join(Environment.NewLine, sp.DefinedAppRoles.Select(r => string.Format($"    {r.Id.ShortenId()}[\"{r.Value}\"]")))
-                : string.Format($"    {sp.AppId.ShortenId()}_app_roles_none[\"`*None*`\"]");
+                ? string.Join(Environment.NewLine, sp.DefinedAppRoles.Select(r => $"    {r.Id.ShortenId()}[\"{r.Value}\"]"))
+                : $"    {sp.AppId.ShortenId()}_app_roles_none[\"`*None*`\"]";
         }
     }
 }
