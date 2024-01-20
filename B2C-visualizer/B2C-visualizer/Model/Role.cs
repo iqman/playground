@@ -16,7 +16,7 @@ namespace B2C_visualizer.Model
         public bool IsEnabled { get; set; } = false;
         [JsonPropertyName("type")]
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter<RoleType>))]
         public RoleType Type { get; set; }
     }
 }

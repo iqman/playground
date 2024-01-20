@@ -1,5 +1,6 @@
 ﻿using B2C_visualizer.Model;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace B2C_visualizer.ServicePrincipalReading
 {
@@ -16,11 +17,16 @@ namespace B2C_visualizer.ServicePrincipalReading
 
             foreach (var c in stringifiedServicePrincipals)
             {
-                var sp = JsonSerializer.Deserialize<ServicePrincipal>(c);
+                var sp = JsonSerializer.Deserialize(c, ServicePrincipalSourceGenerationContext.Default.ServicePrincipal);
                 if (sp != null) sps.Add(sp);
             }
 
             return sps;
         }
+    }
+
+    [JsonSerializable(typeof(ServicePrincipal))]
+    internal partial class ServicePrincipalSourceGenerationContext : JsonSerializerContext
+    {
     }
 }
