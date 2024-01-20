@@ -10,7 +10,7 @@ namespace B2C_visualizer.Model
     internal class ServicePrincipal
     {
         [JsonPropertyName("appId")]
-        public string AppId { get; set; }
+        public required string AppId { get; set; }
         [JsonPropertyName("appRoles")]
         public IEnumerable<Role> DefinedAppRoles { get; set; } = Enumerable.Empty<Role>();
 
@@ -21,7 +21,7 @@ namespace B2C_visualizer.Model
         public IEnumerable<string> IdentifierUris { get; set; } = Enumerable.Empty<string>();
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [JsonPropertyName("passwordCredentials")]
         public IEnumerable<Secret> Secrets { get; set; } = Enumerable.Empty<Secret>();

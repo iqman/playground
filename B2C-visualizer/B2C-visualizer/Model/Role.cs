@@ -5,15 +5,15 @@ namespace B2C_visualizer.Model
     public class Role
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public required string Id { get; set; }
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         [JsonPropertyName("displayName")]
-        public string DisplayName { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
         [JsonPropertyName("value")]
-        public string Value { get; set; }
+        public string Value { get; set; } = string.Empty;
         [JsonPropertyName("isEnabled")]
-        public bool IsEnabled { get; set; }
+        public bool IsEnabled { get; set; } = false;
         [JsonPropertyName("type")]
 
         [JsonConverter(typeof(JsonStringEnumConverter))]

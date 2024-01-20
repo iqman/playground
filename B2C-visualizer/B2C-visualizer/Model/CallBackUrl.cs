@@ -5,8 +5,8 @@ namespace B2C_visualizer.Model
     public class CallBackUrl
     {
         [JsonPropertyName("url")]
-        public string Url { get; set; }
+        public required string Url { get; set; }
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public required string Type { get; set; }
     }
 }

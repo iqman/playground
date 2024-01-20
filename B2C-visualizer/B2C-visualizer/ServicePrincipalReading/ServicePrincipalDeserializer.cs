@@ -16,7 +16,8 @@ namespace B2C_visualizer.ServicePrincipalReading
 
             foreach (var c in stringifiedServicePrincipals)
             {
-                sps.Add(JsonSerializer.Deserialize<ServicePrincipal>(c));
+                var sp = JsonSerializer.Deserialize<ServicePrincipal>(c);
+                if (sp != null) sps.Add(sp);
             }
 
             return sps;

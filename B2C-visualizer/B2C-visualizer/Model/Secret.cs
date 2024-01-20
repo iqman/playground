@@ -5,11 +5,11 @@ namespace B2C_visualizer.Model
     public class Secret
     {
         [JsonPropertyName("keyId")]
-        public string Id { get; set; }
+        public required string Id { get; set; }
         [JsonPropertyName("displayName")]
-        public string DisplayName { get; set; }
+        public required string DisplayName { get; set; }
         [JsonPropertyName("hint")]
-        public string Hint { get; set; }
+        public required string Hint { get; set; }
         [JsonPropertyName("startDate")]
         public DateTimeOffset StartDate { get; set; }
         [JsonPropertyName("endDate")]
