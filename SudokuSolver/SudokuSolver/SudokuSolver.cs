@@ -54,17 +54,19 @@ namespace SudokuSolver
 
             ExcludeCells(board, number);
 
-            var cell = FindCertainPlacementCell(board);
+            var certainCells = FindCertainPlacementCells(board);
 
-            if (cell != null)
+            if (certainCells.Length > 0)
             {
-                cell.Highlight = true;
-                cell.Value = number;
+                foreach (var cell in certainCells)
+                {
+                    cell.Highlight = true;
+                    cell.Value = number;
+                    OnStatusUpdate(StatusType.Info, $"{number}: Found");
+                }
 
                 board.ClearFiftyFiftiesForNumber(number);
                 ExcludeCells(board, number);
-
-                OnStatusUpdate(StatusType.Info, $"{number}: Found");
 
                 RegisterProgress();
             }
@@ -123,16 +125,11 @@ namespace SudokuSolver
             }
         }
 
-        private SudokuCell FindCertainPlacementCell(Board solverBoard)
+        private SudokuCell[] FindCertainPlacementCells(Board solverBoard)
         {
-            return FindSingleFreeCell(solverBoard.GetRow) ??
-                   FindSingleFreeCell(solverBoard.GetColumn) ??
-                   FindSingleFreeCell(solverBoard.GetGroup);
-        }
-
-        private SudokuCell FindSingleFreeCell(Func<int, SudokuCell[]> func)
-        {
-            return FindNFreeCells(1, func).FirstOrDefault();
+            return FindNFreeCells(1, solverBoard.GetRow).Union(
+                   FindNFreeCells(1, solverBoard.GetColumn)).Union(
+                   FindNFreeCells(1, solverBoard.GetGroup)).ToArray();
         }
 
         private SudokuCell[] FindNFreeCells(int cellsToBeFree, Func<int, SudokuCell[]> func)
