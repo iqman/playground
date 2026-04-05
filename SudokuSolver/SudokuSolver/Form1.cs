@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SudokuSolver.Ocr;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,12 +17,19 @@ namespace SudokuSolver
         private readonly Board board;
         private BoardRenderer br;
         private SudokuSolver solver;
+        private ImageLoader il;
 
         public Form1()
         {
             board = new Board();
             InitializeComponent();
 
+            il = new ImageLoader(pictureBoxImage.Size);
+
+            il.ImageAnnotated += Il_ImageAnnotated;
+            il.ImageLoaded += Il_ImageLoaded;
+            il.AnnotationUpdate += Il_AnnotationUpdate;
+            il.ImageContentParsed += Il_ImageContentParsed;
 
             br = new BoardRenderer(board, pictureBoxBoard.Size);
             pictureBoxBoard.Image = br.RenderingImage;
@@ -36,6 +44,37 @@ namespace SudokuSolver
 
             board.Init();
             br.RenderBoard();
+        }
+
+        private void Il_ImageContentParsed(int[] content)
+        {
+            board.Init(content);
+            br.RenderBoard();
+        }
+
+        private void Il_AnnotationUpdate(string text)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                textBoxAnnotationDetails.Text += Environment.NewLine + text;
+            });
+        }
+
+        private void Il_ImageLoaded()
+        {
+            this.InvokeIfRequired(() =>
+            {
+                pictureBoxImage.Image = il.LoadedImage;
+            });
+        }
+
+        private void Il_ImageAnnotated()
+        {
+            this.InvokeIfRequired(() =>
+            {
+                pictureBoxImage.Invalidate();
+                this.Refresh();
+            });
         }
 
         private void Solver_GuessReverted()
@@ -139,6 +178,31 @@ namespace SudokuSolver
         {
             checkBoxAnimateAutoSolve.Checked = false;
             solver.PerfTest();
+        }
+
+        private void buttonLoadImage_Click(object sender, EventArgs e)
+        {
+            il.LoadImage();
+        }
+
+        private void buttonProcessImage_Click(object sender, EventArgs e)
+        {
+            il.ProcessImage();
+        }
+
+        private void buttonProcess2_Click(object sender, EventArgs e)
+        {
+            il.ProcessImage2();
+        }
+
+        private void buttonProcess3_Click(object sender, EventArgs e)
+        {
+            il.ProcessImage3();
+        }
+
+        private void buttonProcess4_Click(object sender, EventArgs e)
+        {
+            il.ProcessImage4();
         }
     }
 

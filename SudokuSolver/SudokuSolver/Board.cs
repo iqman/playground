@@ -131,11 +131,14 @@ namespace SudokuSolver
             }
         }
 
-        public void Init()
+        public void Init(int[] content = null)
         {
+            if (content != null && content.Length != BoardSize* BoardSize)
+                throw new ArgumentOutOfRangeException("content");
+
             for (int i = 0; i < BoardSize * BoardSize; i++)
             {
-                cells[i] = new SudokuCell {Value = game[i]};
+                cells[i] = new SudokuCell {Value = content!=null? content[i] : game[i]};
             }
         }
 

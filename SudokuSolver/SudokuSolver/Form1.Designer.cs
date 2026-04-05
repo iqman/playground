@@ -46,7 +46,15 @@
             this.checkBoxAnimateAutoSolve = new System.Windows.Forms.CheckBox();
             this.buttonReset = new System.Windows.Forms.Button();
             this.buttonPerfTest = new System.Windows.Forms.Button();
+            this.pictureBoxImage = new System.Windows.Forms.PictureBox();
+            this.buttonLoadImage = new System.Windows.Forms.Button();
+            this.buttonProcessImage = new System.Windows.Forms.Button();
+            this.textBoxAnnotationDetails = new System.Windows.Forms.TextBox();
+            this.buttonProcess2 = new System.Windows.Forms.Button();
+            this.buttonProcess3 = new System.Windows.Forms.Button();
+            this.buttonProcess4 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBoard)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBoxBoard
@@ -220,11 +228,86 @@
             this.buttonPerfTest.UseVisualStyleBackColor = true;
             this.buttonPerfTest.Click += new System.EventHandler(this.buttonPerfTest_Click);
             // 
+            // pictureBoxImage
+            // 
+            this.pictureBoxImage.Location = new System.Drawing.Point(819, 14);
+            this.pictureBoxImage.Name = "pictureBoxImage";
+            this.pictureBoxImage.Size = new System.Drawing.Size(500, 500);
+            this.pictureBoxImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxImage.TabIndex = 18;
+            this.pictureBoxImage.TabStop = false;
+            // 
+            // buttonLoadImage
+            // 
+            this.buttonLoadImage.Location = new System.Drawing.Point(819, 520);
+            this.buttonLoadImage.Name = "buttonLoadImage";
+            this.buttonLoadImage.Size = new System.Drawing.Size(75, 23);
+            this.buttonLoadImage.TabIndex = 19;
+            this.buttonLoadImage.Text = "Load";
+            this.buttonLoadImage.UseVisualStyleBackColor = true;
+            this.buttonLoadImage.Click += new System.EventHandler(this.buttonLoadImage_Click);
+            // 
+            // buttonProcessImage
+            // 
+            this.buttonProcessImage.Location = new System.Drawing.Point(900, 520);
+            this.buttonProcessImage.Name = "buttonProcessImage";
+            this.buttonProcessImage.Size = new System.Drawing.Size(75, 23);
+            this.buttonProcessImage.TabIndex = 20;
+            this.buttonProcessImage.Text = "Process";
+            this.buttonProcessImage.UseVisualStyleBackColor = true;
+            this.buttonProcessImage.Click += new System.EventHandler(this.buttonProcessImage_Click);
+            // 
+            // textBoxAnnotationDetails
+            // 
+            this.textBoxAnnotationDetails.Location = new System.Drawing.Point(1325, 12);
+            this.textBoxAnnotationDetails.Multiline = true;
+            this.textBoxAnnotationDetails.Name = "textBoxAnnotationDetails";
+            this.textBoxAnnotationDetails.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxAnnotationDetails.Size = new System.Drawing.Size(382, 502);
+            this.textBoxAnnotationDetails.TabIndex = 21;
+            // 
+            // buttonProcess2
+            // 
+            this.buttonProcess2.Location = new System.Drawing.Point(981, 520);
+            this.buttonProcess2.Name = "buttonProcess2";
+            this.buttonProcess2.Size = new System.Drawing.Size(75, 23);
+            this.buttonProcess2.TabIndex = 22;
+            this.buttonProcess2.Text = "Process2";
+            this.buttonProcess2.UseVisualStyleBackColor = true;
+            this.buttonProcess2.Click += new System.EventHandler(this.buttonProcess2_Click);
+            // 
+            // buttonProcess3
+            // 
+            this.buttonProcess3.Location = new System.Drawing.Point(1062, 520);
+            this.buttonProcess3.Name = "buttonProcess3";
+            this.buttonProcess3.Size = new System.Drawing.Size(75, 23);
+            this.buttonProcess3.TabIndex = 23;
+            this.buttonProcess3.Text = "Process3";
+            this.buttonProcess3.UseVisualStyleBackColor = true;
+            this.buttonProcess3.Click += new System.EventHandler(this.buttonProcess3_Click);
+            // 
+            // buttonProcess4
+            // 
+            this.buttonProcess4.Location = new System.Drawing.Point(1143, 520);
+            this.buttonProcess4.Name = "buttonProcess4";
+            this.buttonProcess4.Size = new System.Drawing.Size(75, 23);
+            this.buttonProcess4.TabIndex = 24;
+            this.buttonProcess4.Text = "Process4";
+            this.buttonProcess4.UseVisualStyleBackColor = true;
+            this.buttonProcess4.Click += new System.EventHandler(this.buttonProcess4_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(817, 614);
+            this.ClientSize = new System.Drawing.Size(1719, 614);
+            this.Controls.Add(this.buttonProcess4);
+            this.Controls.Add(this.buttonProcess3);
+            this.Controls.Add(this.buttonProcess2);
+            this.Controls.Add(this.textBoxAnnotationDetails);
+            this.Controls.Add(this.buttonProcessImage);
+            this.Controls.Add(this.buttonLoadImage);
+            this.Controls.Add(this.pictureBoxImage);
             this.Controls.Add(this.buttonPerfTest);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.checkBoxAnimateAutoSolve);
@@ -246,6 +329,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBoard)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -271,6 +355,13 @@
         private System.Windows.Forms.CheckBox checkBoxAnimateAutoSolve;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Button buttonPerfTest;
+        private System.Windows.Forms.PictureBox pictureBoxImage;
+        private System.Windows.Forms.Button buttonLoadImage;
+        private System.Windows.Forms.Button buttonProcessImage;
+        private System.Windows.Forms.TextBox textBoxAnnotationDetails;
+        private System.Windows.Forms.Button buttonProcess2;
+        private System.Windows.Forms.Button buttonProcess3;
+        private System.Windows.Forms.Button buttonProcess4;
     }
 }
 
