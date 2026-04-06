@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -197,12 +198,81 @@ namespace SudokuSolver
 
         private void buttonProcess3_Click(object sender, EventArgs e)
         {
-            il.ProcessImage3();
+            il.FindEdge();
         }
 
         private void buttonProcess4_Click(object sender, EventArgs e)
         {
             il.ProcessImage4();
+        }
+
+        private void buttonDenoise_Click(object sender, EventArgs e)
+        {
+            il.Denoise();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            il.HighlightEdges();
+        }
+
+        private void buttonCloseGaps_Click(object sender, EventArgs e)
+        {
+            il.CloseGaps();
+        }
+
+        private void buttonTransform_Click(object sender, EventArgs e)
+        {
+            il.Transform();
+        }
+
+        private void buttonReload_Click(object sender, EventArgs e)
+        {
+            il.Reload();
+        }
+
+        private void buttonLoadClipboard_Click(object sender, EventArgs e)
+        {
+            var img = GetImageFromClipboard();
+            if (img != null)
+            {
+                il.SetImage(img);
+            }
+        }
+
+        private System.Drawing.Image GetImageFromClipboard()
+        {
+            if (Clipboard.GetDataObject() == null) return null;
+            if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Dib))
+            {
+                var dib = ((System.IO.MemoryStream)Clipboard.GetData(DataFormats.Dib)).ToArray();
+                var width = BitConverter.ToInt32(dib, 4);
+                var height = BitConverter.ToInt32(dib, 8);
+                var bpp = BitConverter.ToInt16(dib, 14);
+                if (bpp == 32)
+                {
+                    var gch = GCHandle.Alloc(dib, GCHandleType.Pinned);
+                    Bitmap bmp = null;
+                    try
+                    {
+                        var ptr = new IntPtr((long)gch.AddrOfPinnedObject() + 52);
+                        bmp = new Bitmap(width, height, width * 4, System.Drawing.Imaging.PixelFormat.Format32bppArgb, ptr);
+                        bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                        return new Bitmap(bmp);
+                    }
+                    finally
+                    {
+                        gch.Free();
+                        if (bmp != null) bmp.Dispose();
+                    }
+                }
+            }
+            return Clipboard.ContainsImage() ? Clipboard.GetImage() : null;
+        }
+
+        private void buttonShowCells_Click(object sender, EventArgs e)
+        {
+            il.DrawCells();
         }
     }
 

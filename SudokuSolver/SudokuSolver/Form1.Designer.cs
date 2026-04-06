@@ -53,6 +53,13 @@
             this.buttonProcess2 = new System.Windows.Forms.Button();
             this.buttonProcess3 = new System.Windows.Forms.Button();
             this.buttonProcess4 = new System.Windows.Forms.Button();
+            this.buttonDenoise = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.buttonCloseGaps = new System.Windows.Forms.Button();
+            this.buttonTransform = new System.Windows.Forms.Button();
+            this.buttonReload = new System.Windows.Forms.Button();
+            this.buttonLoadClipboard = new System.Windows.Forms.Button();
+            this.buttonShowCells = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBoard)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
             this.SuspendLayout();
@@ -282,7 +289,7 @@
             this.buttonProcess3.Name = "buttonProcess3";
             this.buttonProcess3.Size = new System.Drawing.Size(75, 23);
             this.buttonProcess3.TabIndex = 23;
-            this.buttonProcess3.Text = "Process3";
+            this.buttonProcess3.Text = "FindEdge";
             this.buttonProcess3.UseVisualStyleBackColor = true;
             this.buttonProcess3.Click += new System.EventHandler(this.buttonProcess3_Click);
             // 
@@ -292,15 +299,92 @@
             this.buttonProcess4.Name = "buttonProcess4";
             this.buttonProcess4.Size = new System.Drawing.Size(75, 23);
             this.buttonProcess4.TabIndex = 24;
-            this.buttonProcess4.Text = "Process4";
+            this.buttonProcess4.Text = "Cut&Extract";
             this.buttonProcess4.UseVisualStyleBackColor = true;
             this.buttonProcess4.Click += new System.EventHandler(this.buttonProcess4_Click);
+            // 
+            // buttonDenoise
+            // 
+            this.buttonDenoise.Location = new System.Drawing.Point(900, 551);
+            this.buttonDenoise.Name = "buttonDenoise";
+            this.buttonDenoise.Size = new System.Drawing.Size(75, 23);
+            this.buttonDenoise.TabIndex = 25;
+            this.buttonDenoise.Text = "Denoise";
+            this.buttonDenoise.UseVisualStyleBackColor = true;
+            this.buttonDenoise.Click += new System.EventHandler(this.buttonDenoise_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(981, 551);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "HL Edge";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // buttonCloseGaps
+            // 
+            this.buttonCloseGaps.Location = new System.Drawing.Point(981, 581);
+            this.buttonCloseGaps.Name = "buttonCloseGaps";
+            this.buttonCloseGaps.Size = new System.Drawing.Size(75, 23);
+            this.buttonCloseGaps.TabIndex = 27;
+            this.buttonCloseGaps.Text = "Close Gaps";
+            this.buttonCloseGaps.UseVisualStyleBackColor = true;
+            this.buttonCloseGaps.Click += new System.EventHandler(this.buttonCloseGaps_Click);
+            // 
+            // buttonTransform
+            // 
+            this.buttonTransform.Location = new System.Drawing.Point(1110, 551);
+            this.buttonTransform.Name = "buttonTransform";
+            this.buttonTransform.Size = new System.Drawing.Size(75, 23);
+            this.buttonTransform.TabIndex = 28;
+            this.buttonTransform.Text = "Transform";
+            this.buttonTransform.UseVisualStyleBackColor = true;
+            this.buttonTransform.Click += new System.EventHandler(this.buttonTransform_Click);
+            // 
+            // buttonReload
+            // 
+            this.buttonReload.Location = new System.Drawing.Point(819, 551);
+            this.buttonReload.Name = "buttonReload";
+            this.buttonReload.Size = new System.Drawing.Size(75, 23);
+            this.buttonReload.TabIndex = 29;
+            this.buttonReload.Text = "Reload";
+            this.buttonReload.UseVisualStyleBackColor = true;
+            this.buttonReload.Click += new System.EventHandler(this.buttonReload_Click);
+            // 
+            // buttonLoadClipboard
+            // 
+            this.buttonLoadClipboard.Location = new System.Drawing.Point(819, 580);
+            this.buttonLoadClipboard.Name = "buttonLoadClipboard";
+            this.buttonLoadClipboard.Size = new System.Drawing.Size(75, 23);
+            this.buttonLoadClipboard.TabIndex = 30;
+            this.buttonLoadClipboard.Text = "Load Clip";
+            this.buttonLoadClipboard.UseVisualStyleBackColor = true;
+            this.buttonLoadClipboard.Click += new System.EventHandler(this.buttonLoadClipboard_Click);
+            // 
+            // buttonShowCells
+            // 
+            this.buttonShowCells.Location = new System.Drawing.Point(1052, 577);
+            this.buttonShowCells.Name = "buttonShowCells";
+            this.buttonShowCells.Size = new System.Drawing.Size(75, 23);
+            this.buttonShowCells.TabIndex = 31;
+            this.buttonShowCells.Text = "ShowCells";
+            this.buttonShowCells.UseVisualStyleBackColor = true;
+            this.buttonShowCells.Click += new System.EventHandler(this.buttonShowCells_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1719, 614);
+            this.Controls.Add(this.buttonShowCells);
+            this.Controls.Add(this.buttonLoadClipboard);
+            this.Controls.Add(this.buttonReload);
+            this.Controls.Add(this.buttonTransform);
+            this.Controls.Add(this.buttonCloseGaps);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.buttonDenoise);
             this.Controls.Add(this.buttonProcess4);
             this.Controls.Add(this.buttonProcess3);
             this.Controls.Add(this.buttonProcess2);
@@ -362,6 +446,13 @@
         private System.Windows.Forms.Button buttonProcess2;
         private System.Windows.Forms.Button buttonProcess3;
         private System.Windows.Forms.Button buttonProcess4;
+        private System.Windows.Forms.Button buttonDenoise;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonCloseGaps;
+        private System.Windows.Forms.Button buttonTransform;
+        private System.Windows.Forms.Button buttonReload;
+        private System.Windows.Forms.Button buttonLoadClipboard;
+        private System.Windows.Forms.Button buttonShowCells;
     }
 }
 

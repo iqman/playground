@@ -81,6 +81,27 @@ namespace SudokuSolver.Ocr
         public void LoadImage()
         {
             ReplaceImage(Image.FromFile(ImgToUse));
+            RotateIfNeeded();
+            SaveCopyForLaterReload();
+        }
+
+        private void SaveCopyForLaterReload()
+        {
+            if (LoadedImage == null) return;
+            if (ImageCopyToReloadFrom != null)
+            {
+                ImageCopyToReloadFrom.Dispose();
+                ImageCopyToReloadFrom = null;
+            }
+            ImageCopyToReloadFrom = new Bitmap(LoadedImage);
+        }
+
+        private Image ImageCopyToReloadFrom;
+        public void Reload()
+        {
+            if (ImageCopyToReloadFrom == null) return;
+            LoadedImage = new Bitmap(ImageCopyToReloadFrom);
+            OnImageLoaded();
         }
 
         public void ProcessImage()
@@ -88,25 +109,31 @@ namespace SudokuSolver.Ocr
             RotateIfNeeded();
 
             MakeBlackAndWhiteInverted();
+        }
+
+
+        public void ProcessImage2()
+        {
+            MakeBlackAndWhiteInverted();
             Denoise();
-
+            HighlightEdges();
             CloseGaps();
-
-            HighlightEdges();
-            HighlightEdges();
-            HighlightEdges();
-
-            CloseGaps();
+            FindEdge();
         }
 
         private OpenCvSharp.Point[] outerGrid = null;
-        public void ProcessImage2()
+        public void FindEdge()
         {
-            //Denoise();
-            //CloseGaps();
-            //HighlightEdges();
-
             outerGrid = FindOuterGrid();
+
+            if (outerGrid != null)
+            {
+                OnAnnotationDetailUpdate($"Outer grid found with corners: {string.Join(", ", outerGrid.Select(p => $"({p.X},{p.Y})"))}");
+            }
+            else
+            {
+                OnAnnotationDetailUpdate("No outer grid found in this iteration.");
+            }
         }
 
         public void ProcessImage3()
@@ -117,8 +144,28 @@ namespace SudokuSolver.Ocr
 
         public void ProcessImage4()
         {
-            // MakeBlackAndWhite();
             ExtractCells();
+        }
+
+        public void DrawCells()
+        {
+            PerformCv2Action((input, output) =>
+            {
+                int gridSize = input.Width; // Assuming square grid
+                int cellSize = gridSize / 9;
+
+                input = input.CvtColor(ColorConversionCodes.GRAY2BGR);
+
+                for (int row = 0; row < 9; row++)
+                {
+                    for (int col = 0; col < 9; col++)
+                    {
+                        var cellRect = new OpenCvSharp.Rect(col * cellSize, row * cellSize, cellSize, cellSize);
+                        Cv2.Rectangle(input, cellRect, Scalar.Green, (int)(input.Width * 0.005f));
+                    }
+                }
+                input.CopyTo(output);
+            });
         }
 
         private void ExtractCells()
@@ -133,6 +180,8 @@ namespace SudokuSolver.Ocr
                 // Assuming the image is already perspective-corrected and preprocessed
                 int gridSize = input.Width; // Assuming square grid
                 int cellSize = gridSize / 9;
+                int cellScrinkPercentage = 5; // percentage to scrink the cell rect to avoid grid lines
+
                 for (int row = 0; row < 9; row++)
                 {
                     for (int col = 0; col < 9; col++)
@@ -140,7 +189,7 @@ namespace SudokuSolver.Ocr
                         var cellRect = new OpenCvSharp.Rect(col * cellSize, row * cellSize, cellSize, cellSize);
 
                         // scrink the borders a bit to avoid grid lines
-                        cellRect.Inflate(-cellSize/10, -cellSize/10);
+                        cellRect.Inflate(-cellSize/ (100/cellScrinkPercentage), -cellSize/ (100 / cellScrinkPercentage));
                         var cellImage = new Mat(input, cellRect);
 
                         using (var cellBitmap = cellImage.ToBitmap())
@@ -148,7 +197,7 @@ namespace SudokuSolver.Ocr
                             ReplaceImage(cellBitmap);
                             OnImageAnnotated();
 
-                       //     System.Threading.Thread.Sleep(500); // Pause to visualize each cell
+                            //     System.Threading.Thread.Sleep(500); // Pause to visualize each cell
 
                             int threshold;
                             string details;
@@ -164,27 +213,27 @@ namespace SudokuSolver.Ocr
                             //}
                             //else
                             //{
-                                using (var bwCellBitmap = MakeBlackAndWhiteCopy(cellBitmap, out threshold))
+                            using (var bwCellBitmap = MakeBlackAndWhiteCopy(cellBitmap, out threshold))
+                            {
+                                ReplaceImage(bwCellBitmap);
+                                OnImageAnnotated();
+
+                                //       System.Threading.Thread.Sleep(500); // Pause to visualize each cell
+
+                                result = nr.RecognizeSingleDigit(bwCellBitmap, out confidence, out details);
+
+                                if (confidence > 0.60f)
                                 {
-                                    ReplaceImage(bwCellBitmap);
-                                    OnImageAnnotated();
-
-                             //       System.Threading.Thread.Sleep(500); // Pause to visualize each cell
-
-                                    result = nr.RecognizeSingleDigit(bwCellBitmap, out confidence, out details);
-
-                                    if (confidence > 0.70f)
-                                    {
-                                        boardValues.Add(result);
-                                        OnAnnotationDetailUpdate($"Cell ({row},{col}): {result}, BW confidence: {confidence}");
-                                    }
-                                    else
-                                    {
-                                        boardValues.Add(0);
-                                        OnAnnotationDetailUpdate($"Cell ({row},{col}): Uncertain result, confidence: {confidence}, details: {details} (threshold used: {threshold})");
-                                    }
+                                    boardValues.Add(result);
+                                    OnAnnotationDetailUpdate($"Cell ({row},{col}): {result}, BW confidence: {confidence}");
                                 }
-                         //   }
+                                else
+                                {
+                                    boardValues.Add(0);
+                                    OnAnnotationDetailUpdate($"Cell ({row},{col}): Uncertain result, confidence: {confidence}, details: {details} (threshold used: {threshold})");
+                                }
+                            }
+                            //   }
                         }
                     }
                 }
@@ -193,6 +242,12 @@ namespace SudokuSolver.Ocr
 
                 input.CopyTo(output);
             });
+        }
+
+        public void Transform()
+        {
+            RotateIfNeeded();
+            FixPerspective(outerGrid);
         }
 
         private void FixPerspective(OpenCvSharp.Point[] detectedGrid)
@@ -262,7 +317,6 @@ namespace SudokuSolver.Ocr
                 var filteredGridContours = contours
                    .OrderByDescending(c => Cv2.ContourArea(c))
                    .Where(c => Cv2.ContourArea(c) > expectedArea);
-                   //   .FirstOrDefault(c => Cv2.ContourArea(c) > 10000); // Filter small contours
 
                 input = input.CvtColor(ColorConversionCodes.GRAY2BGR);
 
@@ -277,14 +331,24 @@ namespace SudokuSolver.Ocr
                         double peri = Cv2.ArcLength(gridContour, true);
                         var candidate = Cv2.ApproxPolyDP(gridContour, 0.02 * peri, true);
 
-                        // Ensure the contour is a quadrilateral (4 corners)
+                        // Ensure the contour is a quadrilateral (4 corners), and that it is reasonably centered in the image
                         if (candidate.Length == 4 &&
                             candidate[0].X < midWidth && candidate[0].Y < midHeight &&
                             candidate[1].X < midWidth && candidate[1].Y > midHeight &&
                             candidate[2].X > midWidth && candidate[2].Y > midHeight &&
                             candidate[3].X > midWidth && candidate[3].Y < midHeight)
                         {
-                            Cv2.DrawContours(input, new OpenCvSharp.Point[][] { candidate }, 0, Scalar.Red, 20);
+                            int borderMargin = 2; // pixels
+                            if (candidate[0].X <= borderMargin                  && candidate[0].Y <= borderMargin &&
+                                candidate[1].X <= borderMargin                  && candidate[1].Y >= input.Height - borderMargin &&
+                                candidate[2].X >= input.Width - borderMargin    && candidate[2].Y >= input.Height - borderMargin &&
+                                candidate[3].X >= input.Width - borderMargin    && candidate[3].Y <= borderMargin)
+                            {
+                                // Skip contours that are too close to the total image (likely noise)
+                                continue;
+                            }
+
+                            Cv2.DrawContours(input, new OpenCvSharp.Point[][] { candidate }, 0, Scalar.Red, (int)(input.Width* 0.005f));
 
                             OnAnnotationDetailUpdate("Found a plausible polygon");
 
@@ -300,7 +364,7 @@ namespace SudokuSolver.Ocr
             });
         }
 
-        private void CloseGaps()
+        public void CloseGaps()
         {
             PerformCv2Action((input, output) =>
             {
@@ -313,7 +377,7 @@ namespace SudokuSolver.Ocr
             });
         }
 
-        private void Denoise()
+        public void Denoise()
         {
             PerformCv2Action((input, output) =>
             {
@@ -323,7 +387,7 @@ namespace SudokuSolver.Ocr
             });
         }
 
-        private void HighlightEdges()
+        public void HighlightEdges()
         {
             PerformCv2Action((input, output) =>
             {
@@ -654,6 +718,12 @@ namespace SudokuSolver.Ocr
             OnAnnotationDetailUpdate("Image processed with orientation: " + orient.ToString());
 
             OnImageAnnotated();
+        }
+
+        public void SetImage(Image img)
+        {
+            ReplaceImage(img);
+            SaveCopyForLaterReload();
         }
     }
 }
